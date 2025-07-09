@@ -1,0 +1,31 @@
+{
+  "name": "json-seq-stream",
+  "version": "1.0.0",
+  "description": "application/json-seq support stream / async iterator library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juner/json-seq-stream.git"
+  },
+  "keywords": [
+    "application/json-seq",
+    "TransformStream",
+    "web streams",
+    "asyncIterator",
+    "Symbol.asyncIterator",
+    "rfc7464",
+    "json-seq"
+  ],
+  "author": "juners",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/juner/json-seq-stream/issues"
+  },
+  "homepage": "https://github.com/juner/json-seq-stream#readme",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
