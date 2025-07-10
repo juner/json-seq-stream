@@ -23,6 +23,7 @@ test("enqueue", async ({ expect }) => {
   stack.defer(() => URL.revokeObjectURL(url));
 
   const response = await fetch(url);
+  if (!response.ok) expect.fail();
   const readable = response.body!.pipeThrough(sequenceStream);
   const array = await Array.fromAsync(readable.values());
   expect(array).toHaveLength(2);

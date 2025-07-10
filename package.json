@@ -19,6 +19,7 @@
     "test:watch": "vitest watch --coverage",
     "test:run": "vitest run --coverage --coverage.reporter=cobertura  --coverage.reporter=text",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "build": "vite build && tsc --project tsconfig.build.json"
   },
   "repository": {

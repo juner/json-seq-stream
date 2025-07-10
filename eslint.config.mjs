@@ -7,10 +7,15 @@ import { defineConfig } from "eslint/config";
 
 
 export default defineConfig([
+  {
+    ignores: [
+      "dist/**.*"
+    ]
+  },
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], plugins: { js }, extends: ["js/recommended"] },
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   tseslint.configs.recommended,
-  { files: ["**/*.json"], ignores: ["**/tsconfig.json","package-lock.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
+  { files: ["**/*.json"], ignores: ["**/tsconfig.json", "package-lock.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
   {
     files: [
       "**/tsconfig.json",
