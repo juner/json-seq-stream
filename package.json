@@ -1,15 +1,15 @@
 {
   "name": "json-seq-stream",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "application/json-seq support stream / async iterator library",
   "type": "module",
   "exports": {
     ".": {
       "import": "./index.js",
-      "require": "./index.umd.cjs"
+      "require": "./index.umd.cjs",
+      "types": "./index.d.ts"
     }
   },
-  "types": "./index.d.ts",
   "scripts": {
     "test:watch": "vitest watch --coverage",
     "test:run": "vitest run --coverage --coverage.reporter=cobertura --coverage.reporter=text",
