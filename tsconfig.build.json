@@ -3,7 +3,6 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "outFile": "./dist/index.d.ts",
     "noEmit": false
   },
   "exclude": [
