@@ -1,7 +1,31 @@
 {
     "folders": [
         {
-            "path": ".",
-        },
+            "path": "."
+        }
     ],
+    "settings": {
+        "eslint.useFlatConfig": true,
+        "editor.formatOnSave": false,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit"
+        },
+        "[typescript]": {
+            "editor.tabSize": 2
+        },
+        "[javascript]": {
+            "editor.tabSize": 2
+        },
+        "[json]": {
+            "editor.tabSize": 2
+        },
+        "[jsonc]": {
+            "editor.tabSize": 2
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "dbaeumer.vscode-eslint"
+        ]
+    }
 }

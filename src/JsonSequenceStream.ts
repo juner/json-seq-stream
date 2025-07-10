@@ -1,63 +1,47 @@
-const LINE_BEGIN = 30;
-const LINE_END = 10;
 
-const SEARCH_LINE_BEGIN = "begin";
-const SEARCH_LINE_END = "end";
+import type { TransformStreamConstructor } from "./TransformStreamConstructor.ts";
 
-type SearchMode = typeof SEARCH_LINE_BEGIN | typeof SEARCH_LINE_END;
-
-TextDecoderStream
-
-export type JsonSequenceStreamOptions = {
-    lineBegin: number;
-    lineEnd: number;
+export type JsonSequenceStreamOptions<T> = {
+    parse?: (text: string) => (T | undefined),
+    errorFallback?: false | ((
+        error: unknown, args: {
+            error: (reason: unknown) => void,
+            chunk: string,
+            enqueue: (arg: T) => void
+        }) => (void | Promise<void>));
 };
 
-export class SequenceStream extends TransformStream<string, string> {
-    constructor({ lineBegin, lineEnd }: { lineBegin?: number, lineEnd?: number } = {}) {
-        lineBegin ??= LINE_BEGIN;
-        lineEnd ??= LINE_END;
-        const begin = String.fromCodePoint(lineBegin);
-        const end = String.fromCodePoint(lineEnd);
-        let seuqnce: string[] = [];
-        let mode: SearchMode = SEARCH_LINE_BEGIN;
-        let separater = new RegExp(`(${RegExp.escape(begin)}|${RegExp.escape(end)})`, "u");
-        super({
+function errorSkip() { }
+
+function makeInternalJsonSequenceStream<T>({ parse, errorFallback }: JsonSequenceStreamOptions<T> = {}): {
+    args: ConstructorParameters<TransformStreamConstructor<string, T>>
+} {
+    parse ??= JSON.parse;
+    errorFallback ??= errorSkip;
+    const args: ConstructorParameters<TransformStreamConstructor<string, T>> = [
+        {
             transform(chunk, controller) {
-                for (const c of chunk.split(separater)) {
-                    switch (mode) {
-                        case SEARCH_LINE_BEGIN:
-                            if (c === begin) {
-                                mode = SEARCH_LINE_BEGIN;
-                                continue;
-                            }
-                        case SEARCH_LINE_END:
-                            if (c === end) {
-                                controller.enqueue(seuqnce.splice(0, seuqnce.length).join(""));
-                                continue;
-                            }
-                            seuqnce.push(c);
-                    }
+                try {
+                    const result = parse(chunk);
+                    if (result) controller.enqueue(result);
+                } catch (e: unknown) {
+                    if (!errorFallback) return;
+                    const error = controller.error.bind(controller);
+                    const enqueue = controller.enqueue.bind(controller);
+                    return errorFallback(e, { chunk, error, enqueue });
                 }
             }
-        });
-
-
-    }
-}
-const defaultOption: JsonSequenceStreamOptions = {
-    lineBegin: LINE_BEGIN,
-    lineEnd: LINE_END,
+        }
+    ];
+    return { args };
 }
 
-export class JsonSequenceStream<T> extends TransformStream<Uint8Array<ArrayBufferLike>, T> {
-    constructor(options: Partial<JsonSequenceStreamOptions>) {
-        super(
-            {
-                transform(chunk, controller) {
-
-                }
-            }
-        )
+/**
+ * string の sequence を 連続した `T` の sequence に変換する TransformStream
+ */
+export class JsonSequenceStream<T> extends TransformStream<string, T> {
+    constructor(options: JsonSequenceStreamOptions<T> = {}) {
+        const { args } = makeInternalJsonSequenceStream(options);
+        super(...args);
     }
 }
