@@ -8,8 +8,7 @@
   "exports": {
     ".": {
       "import": "./index.js",
-      "require": "./index.umd.cjs",
-      "types": "./index.d.ts"
+      "require": "./index.umd.cjs"
     }
   },
   "scripts": {
