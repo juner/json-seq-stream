@@ -1,47 +1,38 @@
+import { JsonSequenceFormatStream, type JsonSequenceFormatStreamOptions } from "./JsonSequenceFormatStream";
+import { SequenceStream, } from "./SequenceStream";
+import type { SequenceStreamOptions } from "./SequenceStream";
 
-import type { TransformStreamConstructor } from "./TransformStreamConstructor.ts";
+export type JsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & JsonSequenceFormatStreamOptions<T> & SequenceStreamOptions;
 
-export type JsonSequenceStreamOptions<T> = {
-    parse?: (text: string) => (T | undefined),
-    errorFallback?: false | ((
-        error: unknown, args: {
-            error: (reason: unknown) => void,
-            chunk: string,
-            enqueue: (arg: T) => void
-        }) => (void | Promise<void>));
-};
-
-function errorSkip() { }
-
-function makeInternalJsonSequenceStream<T>({ parse, errorFallback }: JsonSequenceStreamOptions<T> = {}): {
-    args: ConstructorParameters<TransformStreamConstructor<string, T>>
-} {
-    parse ??= JSON.parse;
-    errorFallback ??= errorSkip;
-    const args: ConstructorParameters<TransformStreamConstructor<string, T>> = [
-        {
-            transform(chunk, controller) {
-                try {
-                    const result = parse(chunk);
-                    if (result) controller.enqueue(result);
-                } catch (e: unknown) {
-                    if (!errorFallback) return;
-                    const error = controller.error.bind(controller);
-                    const enqueue = controller.enqueue.bind(controller);
-                    return errorFallback(e, { chunk, error, enqueue });
-                }
-            }
-        }
-    ];
-    return { args };
+function makeInternalJsonSequenceStream<T>(options: JsonSequenceStreamOptions<T>) {
+  const { label, fatal, lineBegin, lineEnd, parse, errorFallback } = options;
+  const decoder = new TextDecoderStream(label, { fatal });
+  const sequence = new SequenceStream({ lineBegin, lineEnd });
+  const jsonSequence = new JsonSequenceFormatStream({ parse, errorFallback });
+  const { writable } = decoder;
+  const readable = decoder.readable
+    .pipeThrough(sequence)
+    .pipeThrough(jsonSequence);
+  return { writable, readable };
 }
 
 /**
- * string の sequence を 連続した `T` の sequence に変換する TransformStream
+ * fetch 等の stream() に接続する目的の application/json-seq フォーマットを T型の json として パースする Stream
  */
-export class JsonSequenceStream<T> extends TransformStream<string, T> {
-    constructor(options: JsonSequenceStreamOptions<T> = {}) {
-        const { args } = makeInternalJsonSequenceStream(options);
-        super(...args);
-    }
+class JsonSequenceStream<T> extends TransformStream<BufferSource, T> {
+  #writable: WritableStream<BufferSource>;
+  #readable: ReadableStream<T>;
+  get writable() { return this.#writable; }
+  get readable() { return this.#readable; }
+  constructor(options: { label?: string } & TextDecoderOptions & JsonSequenceFormatStreamOptions<T> & SequenceStreamOptions = {}) {
+    super();
+    ({
+      readable: this.#readable,
+      writable: this.#writable
+    } = makeInternalJsonSequenceStream(options))
+  }
 }
+export { 
+  JsonSequenceStream,
+  JsonSequenceStream as default,
+};

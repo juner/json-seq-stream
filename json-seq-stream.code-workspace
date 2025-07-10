@@ -21,11 +21,22 @@
         },
         "[jsonc]": {
             "editor.tabSize": 2
+        },
+		"coverage-gutters.coverageFileNames": [
+			"TestResults/coverage/cobertura-coverage.xml",
+			"TestResults/*/coverage.cobertura.xml"
+		],
+        "explorer.fileNesting.enabled": true,
+        "explorer.fileNesting.patterns": {
+            "*.ts": "${capture}.test.ts",
+            "tsconfig.json": "tsconfig.*.json",
+            "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock"
         }
     },
     "extensions": {
         "recommendations": [
-            "dbaeumer.vscode-eslint"
+            "dbaeumer.vscode-eslint",
+            "vitest.explorer"
         ]
     }
 }
