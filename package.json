@@ -1,8 +1,10 @@
 {
   "name": "json-seq-stream",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "application/json-seq support stream / async iterator library",
   "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
       "import": "./index.js",
