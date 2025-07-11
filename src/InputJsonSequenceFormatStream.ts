@@ -1,7 +1,7 @@
 
 import type { TransformStreamConstructor } from "./TransformStreamConstructor";
 
-export type JsonSequenceFormatStreamOptions<T> = {
+export type InputJsonSequenceFormatStreamOptions<T> = {
     parse?: (text: string) => (T | undefined),
     errorFallback?: false | ((
         error: unknown, args: {
@@ -12,7 +12,7 @@ export type JsonSequenceFormatStreamOptions<T> = {
 };
 
 
-function makeInternalJsonSequenceFormatStream<T>({ parse, errorFallback }: JsonSequenceFormatStreamOptions<T> = {}): {
+function makeInternalInputJsonSequenceFormatStream<T>({ parse, errorFallback }: InputJsonSequenceFormatStreamOptions<T> = {}): {
     args: ConstructorParameters<TransformStreamConstructor<string, T>>
 } {
     parse ??= JSON.parse;
@@ -40,9 +40,25 @@ function makeInternalJsonSequenceFormatStream<T>({ parse, errorFallback }: JsonS
 /**
  * string の sequence を 連続した `T` の sequence に変換する TransformStream
  */
-export class JsonSequenceFormatStream<T> extends TransformStream<string, T> {
-    constructor(options: JsonSequenceFormatStreamOptions<T> = {}) {
-        const { args } = makeInternalJsonSequenceFormatStream(options);
+export class InputJsonSequenceFormatStream<T> extends TransformStream<string, T> {
+    constructor(options: InputJsonSequenceFormatStreamOptions<T> = {}) {
+        const { args } = makeInternalInputJsonSequenceFormatStream(options);
         super(...args);
     }
 }
+
+// #region deprecated remove v2.0.0 - 
+
+/**
+ * @deprecated rename to InputJsonSequenceFormatStreamOptions
+ * @see InputJsonSequenceFormatStreamOptions
+ */
+export type JsonSequenceFormatStreamOptions<T> = InputJsonSequenceFormatStreamOptions<T>;
+
+/**
+ * @deprecated rename to InputJsonSequenceFormatStream
+ * @see InputJsonSequenceFormatStream
+ */
+export const JsonSequenceFormatStream = InputJsonSequenceFormatStream;
+
+// #endregion

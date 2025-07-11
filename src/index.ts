@@ -1,6 +1,6 @@
-import JsonSequenceStream from "./JsonSequenceStream";
+import InputJsonSequenceStream from "./InputJsonSequenceStream";
 
-export * from "./SequenceStream";
-export * from "./JsonSequenceFormatStream";
-export { JsonSequenceStream } from "./JsonSequenceStream";
-export default JsonSequenceStream;
+export * from "./InputSequenceStream";
+export * from "./InputJsonSequenceFormatStream";
+export * from "./InputJsonSequenceStream";
+export default InputJsonSequenceStream;
