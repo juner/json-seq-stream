@@ -5,7 +5,7 @@ application/json-seq support stream / async iterator library
 ## usage
 
 ```ts
-import { JsonSequenceStream } from "json-seq-stream";
+import { InputJsonSequenceStream as JsonSequenceStream } from "json-seq-stream";
 
 type Value = {
     value: number;
@@ -20,3 +20,8 @@ for await (const value of readable) {
     console.log(value);
 }
 ```
+
+## see also
+
+- rfc7464 - JavaScript Object Notation (JSON) Text Sequences \
+[https://datatracker.ietf.org/doc/html/rfc7464](https://datatracker.ietf.org/doc/html/rfc7464)
