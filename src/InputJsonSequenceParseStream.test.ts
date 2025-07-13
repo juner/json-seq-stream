@@ -1,8 +1,8 @@
 import { test } from "vitest";
-import { InputJsonSequenceFormatStream } from ".";
+import { InputJsonSequenceParseStream } from ".";
 
 test("empty", async ({ expect }) => {
-  const { readable, writable } = new InputJsonSequenceFormatStream();
+  const { readable, writable } = new InputJsonSequenceParseStream();
   await writable.close();
   const array = await Array.fromAsync(readable.values())
   expect(array.length).toEqual(0);
@@ -11,7 +11,7 @@ test("enqueue", async ({ expect }) => {
   type Value = {
     value: number;
   };
-  const { readable, writable } = new InputJsonSequenceFormatStream<Value>();
+  const { readable, writable } = new InputJsonSequenceParseStream<Value>();
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push(writer.write(JSON.stringify({ "value": 10 })));
@@ -29,7 +29,7 @@ test("error to skip", async ({ expect }) => {
   type Value = {
     value: number;
   };
-  const { readable, writable } = new InputJsonSequenceFormatStream<Value>();
+  const { readable, writable } = new InputJsonSequenceParseStream<Value>();
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push(writer.write("{value: 10}"));
@@ -47,7 +47,7 @@ test("error to enqueue", async ({ expect }) => {
   } | {
     error: unknown;
   };
-  const { readable, writable } = new InputJsonSequenceFormatStream<Value>({
+  const { readable, writable } = new InputJsonSequenceParseStream<Value>({
     errorFallback: async (e, { enqueue }) => {
       const {resolve, promise } = Promise.withResolvers<void>();
       queueMicrotask(resolve);
@@ -73,7 +73,7 @@ test("error to error", async ({ expect, }) => {
   } | {
     error: unknown;
   };
-  const { readable, writable } = new InputJsonSequenceFormatStream<Value>({
+  const { readable, writable } = new InputJsonSequenceParseStream<Value>({
     errorFallback: (_e, { error }) => {
       error(new Error("sample-error", {cause: [_e]}));
     }

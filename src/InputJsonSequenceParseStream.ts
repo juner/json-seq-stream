@@ -1,7 +1,7 @@
 
 import type { TransformStreamConstructor } from "./TransformStreamConstructor";
 
-export type InputJsonSequenceFormatStreamOptions<T> = {
+export type InputJsonSequenceParseStreamOptions<T> = {
     parse?: (text: string) => (T | undefined),
     errorFallback?: false | ((
         error: unknown, args: {
@@ -12,7 +12,7 @@ export type InputJsonSequenceFormatStreamOptions<T> = {
 };
 
 
-function makeInternalInputJsonSequenceFormatStream<T>({ parse, errorFallback }: InputJsonSequenceFormatStreamOptions<T> = {}): {
+function makeInternalInputJsonSequenceParseStream<T>({ parse, errorFallback }: InputJsonSequenceParseStreamOptions<T> = {}): {
     args: ConstructorParameters<TransformStreamConstructor<string, T>>
 } {
     parse ??= JSON.parse;
@@ -40,9 +40,9 @@ function makeInternalInputJsonSequenceFormatStream<T>({ parse, errorFallback }: 
 /**
  * string の sequence を 連続した `T` の sequence に変換する TransformStream
  */
-export class InputJsonSequenceFormatStream<T> extends TransformStream<string, T> {
-    constructor(options: InputJsonSequenceFormatStreamOptions<T> = {}) {
-        const { args } = makeInternalInputJsonSequenceFormatStream(options);
+export class InputJsonSequenceParseStream<T> extends TransformStream<string, T> {
+    constructor(options: InputJsonSequenceParseStreamOptions<T> = {}) {
+        const { args } = makeInternalInputJsonSequenceParseStream(options);
         super(...args);
     }
 }
@@ -51,14 +51,14 @@ export class InputJsonSequenceFormatStream<T> extends TransformStream<string, T>
 
 /**
  * @deprecated rename to InputJsonSequenceFormatStreamOptions
- * @see InputJsonSequenceFormatStreamOptions
+ * @see InputJsonSequenceParseStreamOptions
  */
-export type JsonSequenceFormatStreamOptions<T> = InputJsonSequenceFormatStreamOptions<T>;
+export type JsonSequenceFormatStreamOptions<T> = InputJsonSequenceParseStreamOptions<T>;
 
 /**
  * @deprecated rename to InputJsonSequenceFormatStream
- * @see InputJsonSequenceFormatStream
+ * @see InputJsonSequenceParseStream
  */
-export const JsonSequenceFormatStream = InputJsonSequenceFormatStream;
+export const JsonSequenceFormatStream = InputJsonSequenceParseStream;
 
 // #endregion

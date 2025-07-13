@@ -1,14 +1,14 @@
-import { InputJsonSequenceFormatStream, type InputJsonSequenceFormatStreamOptions } from "./InputJsonSequenceFormatStream";
+import { InputJsonSequenceParseStream, type InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream";
 import { InputSequenceStream, } from "./InputSequenceStream";
 import type { InputSequenceStreamOptions } from "./InputSequenceStream";
 
-export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & InputJsonSequenceFormatStreamOptions<T> & InputSequenceStreamOptions;
+export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputSequenceStreamOptions;
 
 function makeInternalJsonSequenceStream<T>(options: InputJsonSequenceStreamOptions<T>) {
   const { label, fatal, lineBegin, lineEnd, parse, errorFallback } = options;
   const decoder = new TextDecoderStream(label, { fatal });
   const sequence = new InputSequenceStream({ lineBegin, lineEnd });
-  const jsonSequence = new InputJsonSequenceFormatStream({ parse, errorFallback });
+  const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback });
   const { writable } = decoder;
   const readable = decoder.readable
     .pipeThrough(sequence)
@@ -24,7 +24,7 @@ class InputJsonSequenceStream<T> extends TransformStream<BufferSource, T> {
   #readable: ReadableStream<T>;
   get writable() { return this.#writable; }
   get readable() { return this.#readable; }
-  constructor(options: { label?: string } & TextDecoderOptions & InputJsonSequenceFormatStreamOptions<T> & InputSequenceStreamOptions = {}) {
+  constructor(options: { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputSequenceStreamOptions = {}) {
     super();
     ({
       readable: this.#readable,
