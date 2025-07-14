@@ -1,4 +1,5 @@
-import { InputJsonSequenceParseStream, type InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream";
+import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream";
+import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream";
 import { InputSequenceStream, } from "./InputSequenceStream";
 import type { InputSequenceStreamOptions } from "./InputSequenceStream";
 
@@ -24,7 +25,7 @@ class InputJsonSequenceStream<T> extends TransformStream<BufferSource, T> {
   #readable: ReadableStream<T>;
   get writable() { return this.#writable; }
   get readable() { return this.#readable; }
-  constructor(options: { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputSequenceStreamOptions = {}) {
+  constructor(options: InputJsonSequenceStreamOptions<T> = {}) {
     super();
     ({
       readable: this.#readable,
@@ -32,7 +33,7 @@ class InputJsonSequenceStream<T> extends TransformStream<BufferSource, T> {
     } = makeInternalJsonSequenceStream(options))
   }
 }
-export { 
+export {
   InputJsonSequenceStream,
   InputJsonSequenceStream as default,
 };
@@ -45,7 +46,7 @@ export {
  */
 export const JsonSequenceStream = InputJsonSequenceStream;
 
-/** 
+/**
  * @deprecated rename to InputJsonSequenceStreamOptions
  * @see InputJsonSequenceStreamOptions
  */

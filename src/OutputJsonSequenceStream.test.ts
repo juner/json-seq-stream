@@ -1,12 +1,12 @@
 import { test } from "vitest";
-import { InputJsonSequenceStream } from ".";
+import { OutputJsonSequenceStream } from ".";
 import { LF, RS } from "./rfc7464";
 
 test("empty", async ({ expect }) => {
   type Value = {
     value: number;
   };
-  const { readable, writable } = new InputJsonSequenceStream<Value>();
+  const { readable, writable } = new OutputJsonSequenceStream<Value>();
   await writable.close();
   const array = await Array.fromAsync(readable.values());
   expect(array.length).toEqual(0);
@@ -16,8 +16,12 @@ test("enqueue", async ({ expect }) => {
   type Value = {
     value: number;
   };
-  const sequenceStream = new InputJsonSequenceStream<Value>();
-  const blob = new Blob([`${RS}{"value":30}${LF}${RS}{"value":3}`]);
+  const sequenceStream = new OutputJsonSequenceStream<Value>();
+  const writer = sequenceStream.writable.getWriter();
+  writer.write({value: 30});
+  writer.write({value: 3});
+  await writer.close();
+  const blob = await new Response(sequenceStream.readable).blob();
   const file = new File([blob], "json-seq.json-seq", { type: "application/json-seq" });
   const url = URL.createObjectURL(file);
   await using stack = new AsyncDisposableStack();
@@ -25,9 +29,6 @@ test("enqueue", async ({ expect }) => {
 
   const response = await fetch(url);
   if (!response.ok) expect.fail();
-  const readable = response.body!.pipeThrough(sequenceStream);
-  const array = await Array.fromAsync(readable.values());
-  expect(array).toHaveLength(2);
-  expect(array).toHaveProperty("[0].value", 30);
-  expect(array).toHaveProperty("[1].value", 3);
+  const text = await response.text();
+  expect(text).equal(`${RS}{"value":30}${LF}${RS}{"value":3}${LF}`);
 });
