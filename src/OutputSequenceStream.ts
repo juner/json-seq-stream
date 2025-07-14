@@ -1,7 +1,8 @@
+import { LF, RS } from "./rfc7464";
 import type { TransformStreamConstructor } from "./TransformStreamConstructor";
 
-const LINE_BEGIN = '\u00e1';
-const LINE_END = '\n';
+const LINE_BEGIN = RS;
+const LINE_END = LF;
 
 export type OutputSequenceStreamOptions = {
   lineBegin?: string;

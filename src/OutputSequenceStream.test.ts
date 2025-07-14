@@ -1,5 +1,6 @@
 import { test } from "vitest";
 import { OutputSequenceStream } from ".";
+import { LF, RS } from "./rfc7464";
 
 test("empty", async ({ expect }) => {
   const { readable, writable } = new OutputSequenceStream();
@@ -23,7 +24,7 @@ test("enqueue", async ({ expect }) => {
     return arrayWait;
   })();
   expect(array).toHaveLength(3);
-  expect(array).toHaveProperty("0", `\u00e1test\n`);
-  expect(array).toHaveProperty("1", `\u00e1hogepiyo\n`);
-  expect(array).toHaveProperty("2", `\u00e1fugapukapuka\n`);
+  expect(array).toHaveProperty("0", `${RS}test${LF}`);
+  expect(array).toHaveProperty("1", `${RS}hogepiyo${LF}`);
+  expect(array).toHaveProperty("2", `${RS}fugapukapuka${LF}`);
 });

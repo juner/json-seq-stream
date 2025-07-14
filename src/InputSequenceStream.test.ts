@@ -1,5 +1,6 @@
 import { test } from "vitest";
 import { InputSequenceStream } from ".";
+import { LF, RS } from "./rfc7464";
 
 test("empty", async ({expect}) => {
   const {readable, writable} = new InputSequenceStream();
@@ -14,7 +15,7 @@ test("enqueue", async ({expect}) => {
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push((async () => {
-    await writer.write(`\u00e1TESTTESTTEST\n\n\u00e1\u00e1\u00e1NEKONEKO\u00e1INUINU`);
+    await writer.write(`${RS}TESTTESTTEST${LF}${LF}${RS}${RS}${RS}NEKONEKO${RS}INUINU`);
     await writer.close();
   })());
   const arrayWait = Array.fromAsync(readable.values());
