@@ -5,7 +5,7 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
 
 env:
-  WORKING_DIRECTORY: application
+  WORKING_DIRECTORY: ./application
 
 jobs:
   test:
@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: ./package.json
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
       - name: Install dependencies
