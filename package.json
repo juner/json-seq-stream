@@ -1,6 +1,6 @@
 {
   "name": "json-seq-stream",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "application/json-seq support stream / async iterator library",
   "type": "module",
   "main": "./index.js",
@@ -18,7 +18,7 @@
   },
   "scripts": {
     "test:watch": "vitest watch --coverage",
-    "test:run": "vitest run --coverage --coverage.reporter=cobertura --coverage.reporter=text",
+    "test": "vitest run --coverage --coverage.reporter=cobertura --coverage.reporter=text",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "vite build && tsc --project tsconfig.build.json && cpx ./package.json dist && cpx README.md dist && cpx LICENSE dist"
@@ -38,6 +38,9 @@
   ],
   "author": "juners",
   "license": "MIT",
+  "engines": {
+    "node": "^24.x"
+  },
   "bugs": {
     "url": "https://github.com/juner/json-seq-stream/issues"
   },
