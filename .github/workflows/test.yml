@@ -33,5 +33,3 @@ jobs:
         run: npx vitest --coverage.enabled true
       - name: Show coverage
         uses: davelosert/vitest-coverage-report-action@v2
-        with:
-          working-directory: ${{ env.WORKING_DIRECTORY }}
