@@ -5,7 +5,7 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
 
 env:
-  WORKING_DIRECTORY: ./application
+  WORKING_DIRECTORY: application
 
 jobs:
   test:
@@ -17,14 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: ./
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ./package.json
+          node-version-file: package.json
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
       - name: Install dependencies
