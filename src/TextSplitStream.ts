@@ -1,4 +1,3 @@
-import { CRLF, LF } from "./jsonlines";
 import type { TransformStreamConstructor } from "./TransformStreamConstructor";
 
 export type TextSplitStreamOptions = {
@@ -82,20 +81,3 @@ export class TextSplitStream extends TransformStream<string, string> {
     super(...args);
   }
 }
-
-
-const LINEFEED_SEPARATOR = [LF, CRLF];
-
-/**
- * Stream to convert to LF or CRLF delimited sequence
- */
-export class InputLineFeedSeparattedSequenceStream extends TextSplitStream {
-  constructor(options?: Partial<TextSplitStreamOptions>) {
-
-    let { splitter, chunkEndSplit } = options ?? {};
-    splitter ??= LINEFEED_SEPARATOR;
-    chunkEndSplit ??= false;
-    super({ splitter, chunkEndSplit });
-  }
-}
-

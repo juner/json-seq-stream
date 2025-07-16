@@ -1,7 +1,13 @@
-export * from "./InputRecordSequenceStream";
 export * from "./TextSplitStream";
+export * from "./TextJoinStream";
+export * from "./InputRecordSequenceStream";
 export * from "./InputJsonSequenceParseStream";
 export * from "./InputJsonSequenceStream";
 export * from "./OutputRecordSequenceStream";
 export * from "./OutputJsonSequenceStfingifyStream";
 export * from "./OutputJsonSequenceStream";
+
+//#region split / join
+export * from "./InputLineFeedSeparattedSequenceStream";
+export * from "./OutputTextJoinLineFeedSequenceStream";
+//#endregion

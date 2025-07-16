@@ -1,0 +1,51 @@
+import type { TransformStreamConstructor } from "./TransformStreamConstructor";
+
+export type TextJoinStreamOptions = {
+  /** separator character */
+  delimiter: string;
+  /** start split force */
+  start: boolean;
+  /** end split force */
+  end: boolean;
+  /** skip empty string */
+  skip: boolean;
+}
+
+function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSplit, skip: skipEmpty }: TextJoinStreamOptions): {
+  args: ConstructorParameters<TransformStreamConstructor<string, string>>
+} {
+  let firstChunk = true;
+  const args: ConstructorParameters<TransformStreamConstructor<string, string>> = [
+    {
+      transform(chunk, controller) {
+        if (skipEmpty && chunk.length <= 0) return;
+        if (firstChunk) {
+          if (startSplit)
+            controller.enqueue(delimiter);
+          firstChunk = false;
+        } else {
+          controller.enqueue(delimiter);
+        }
+        controller.enqueue(chunk);
+      },
+      flush(controller: TransformStreamDefaultController<string>) {
+        if (firstChunk) return;
+        if (!endSplit) return;
+        controller.enqueue(delimiter);
+      }
+    }
+  ];
+  return {
+    args
+  };
+}
+
+/**
+ * Converts a sequence into a stream with a delimiter.
+ */
+export class TextJoinStream extends TransformStream<string, string> {
+  constructor(options: TextJoinStreamOptions) {
+    const { args } = makeInternalTextJoinStream(options);
+    super(...args);
+  }
+}
