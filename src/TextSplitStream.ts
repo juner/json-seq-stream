@@ -3,15 +3,15 @@ import type { TransformStreamConstructor } from "./TransformStreamConstructor";
 
 export type TextSplitStreamOptions = {
   /** separator character */
-  separator: string | string[];
+  splitter: string | string[];
   /** chunk end split force */
   chunkEndSplit: boolean;
 }
 
-function makeInternalInputSeparatedSeqenceStream({ separator: sep, chunkEndSplit }: TextSplitStreamOptions): {
+function makeInternalInputSeparatedSeqenceStream({ splitter, chunkEndSplit }: TextSplitStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
-  const { separator, checker } = makeSeparator(sep);
+  const { separator, checker } = makeSeparator(splitter);
   const sequence: string[] = [];
   const args: ConstructorParameters<TransformStreamConstructor<string, string>> = [
     {
@@ -91,11 +91,11 @@ const LINEFEED_SEPARATOR = [LF, CRLF];
  */
 export class InputLineFeedSeparattedSequenceStream extends TextSplitStream {
   constructor(options?: Partial<TextSplitStreamOptions>) {
-     
-    let { separator, chunkEndSplit } = options ?? {};
-    separator ??= LINEFEED_SEPARATOR;
+
+    let { splitter, chunkEndSplit } = options ?? {};
+    splitter ??= LINEFEED_SEPARATOR;
     chunkEndSplit ??= false;
-    super({ separator, chunkEndSplit });
+    super({ splitter, chunkEndSplit });
   }
 }
 

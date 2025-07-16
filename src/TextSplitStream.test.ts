@@ -27,17 +27,17 @@ test("enqueue", async ({ expect }) => {
 });
 
 test("custom", async ({ expect }) => {
-  const separator = "改行";
+  const splitter = "改行";
   const chunkEndSplit = true;
   const {readable, writable } = new TextSplitStream({
-    separator,
+    splitter,
     chunkEndSplit,
   });
   const promises: Promise<unknown>[] = [];
   promises.push((async () => {
     const writer = writable.getWriter();
-    await writer.write(`${separator}猫猫${separator}犬犬`);
-    await writer.write(`鳥鳥${separator}猿猿${separator}`);
+    await writer.write(`${splitter}猫猫${splitter}犬犬`);
+    await writer.write(`鳥鳥${splitter}猿猿${splitter}`);
     await writer.close();
   })());
   const array = await Array.fromAsync(readable);
