@@ -18,8 +18,8 @@ test("enqueue", async ({ expect }) => {
   };
   const sequenceStream = new OutputJsonSequenceStream<Value>();
   const writer = sequenceStream.writable.getWriter();
-  writer.write({value: 30});
-  writer.write({value: 3});
+  writer.write({ value: 30 });
+  writer.write({ value: 3 });
   await writer.close();
   const blob = await new Response(sequenceStream.readable).blob();
   const file = new File([blob], "json-seq.json-seq", { type: "application/json-seq" });
