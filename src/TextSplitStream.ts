@@ -1,21 +1,14 @@
 import { CRLF, LF } from "./jsonlines";
 import type { TransformStreamConstructor } from "./TransformStreamConstructor";
 
-function makeSeparator(separater: string[] | string) {
-  if (typeof separater === "string")
-    separater = [separater];
-  const parts = separater.map(s => RegExp.escape(s)).join('|');
-  return {
-    separator: new RegExp(`(${parts})`),
-    checker: new RegExp(`^(${parts})$`),
-  }
+export type TextSplitStreamOptions = {
+  /** separator character */
+  separator: string | string[];
+  /** chunk end split force */
+  chunkEndSplit: boolean;
 }
 
-export type SplitSeqenceStreamOptions = {
-  separater: string | string[];
-}
-
-function makeInternalInputSeparatedSeqenceStream({ separater: sep }: SplitSeqenceStreamOptions): {
+function makeInternalInputSeparatedSeqenceStream({ separator: sep, chunkEndSplit }: TextSplitStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const { separator, checker } = makeSeparator(sep);
@@ -24,48 +17,85 @@ function makeInternalInputSeparatedSeqenceStream({ separater: sep }: SplitSeqenc
     {
       transform(chunk, controller) {
         for (const c of chunk.split(separator)) {
+
+          // skip empty string
+          if (c.length <= 0) continue;
+
           if (checker.test(c)) {
-            if (sequence.length <= 0) continue;
-            const enqueue = enqueueSequence(sequence);
-            if (enqueue.length <= 0) continue;
-            controller.enqueue(enqueue);
+            enqueue(sequence, controller);
             continue;
           }
+
           sequence.push(c);
         }
+
+        // chunk end split
+        if (!chunkEndSplit) return;
+        enqueue(sequence, controller);
+      },
+      flush(controller: TransformStreamDefaultController<string>) {
+        enqueue(sequence, controller);
       }
     }
   ];
   return {
     args
   };
-  function enqueueSequence(sequence: string[]) {
-    return sequence.splice(0, sequence.length).join("");
+}
+
+/**
+ * string[] or string -> RegExp
+ * @param separater
+ * @returns
+ */
+function makeSeparator(separater: string[] | string) {
+  if (typeof separater === "string")
+    separater = [separater];
+  const parts = separater.map(s => RegExp.escape(s)).join('|');
+  return {
+    separator: new RegExp(`(${parts})`, "ug"),
+    checker: new RegExp(`^(${parts})$`),
   }
 }
 
 /**
- * 任意の文字列で区切られた 文字列を シーケンスに変換するストリーム
+ * enqueue controller
+ * @param sequence
+ * @param controller
+ * @returns
+ */
+function enqueue(sequence: string[], controller: TransformStreamDefaultController<string>) {
+  // empty sequence skip
+  if (sequence.length <= 0) return;
+
+  // sequence -> string
+  const enqueue = sequence.splice(0, sequence.length).join("");
+  controller.enqueue(enqueue);
+}
+
+/**
+ * A stream that converts an arbitrary delimited string into a sequence.
  */
 export class TextSplitStream extends TransformStream<string, string> {
-  constructor(options: SplitSeqenceStreamOptions) {
+  constructor(options: TextSplitStreamOptions) {
     const { args } = makeInternalInputSeparatedSeqenceStream(options);
     super(...args);
   }
 }
 
 
-const SEPARATOR = [LF, CRLF];
+const LINEFEED_SEPARATOR = [LF, CRLF];
 
 /**
- * LF もしくは CRLF で区切られた シーケンスに変換するストリーム
+ * Stream to convert to LF or CRLF delimited sequence
  */
 export class InputLineFeedSeparattedSequenceStream extends TextSplitStream {
-  constructor(options?: Partial<SplitSeqenceStreamOptions>) {
-    // eslint-disable-next-line prefer-const
-    let { separater, ...o } = options ?? {};
-    separater ??= SEPARATOR;
-    super({ separater, ...o });
+  constructor(options?: Partial<TextSplitStreamOptions>) {
+     
+    let { separator, chunkEndSplit } = options ?? {};
+    separator ??= LINEFEED_SEPARATOR;
+    chunkEndSplit ??= false;
+    super({ separator, chunkEndSplit });
   }
 }
 
