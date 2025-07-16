@@ -1,16 +1,16 @@
 import { test } from "vitest";
-import { OutputSequenceStream } from ".";
+import { OutputRecordSequenceStream } from ".";
 import { LF, RS } from "./rfc7464";
 
 test("empty", async ({ expect }) => {
-  const { readable, writable } = new OutputSequenceStream();
+  const { readable, writable } = new OutputRecordSequenceStream();
   writable.close();
   const array = await Array.fromAsync(readable);
   expect(array).toHaveLength(0);
 });
 
 test("enqueue", async ({ expect }) => {
-  const { readable, writable } = new OutputSequenceStream();
+  const { readable, writable } = new OutputRecordSequenceStream();
   const writer = writable.getWriter();
   const array = await (async () => {
     const promises: Promise<unknown>[] = [];

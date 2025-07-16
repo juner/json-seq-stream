@@ -1,14 +1,14 @@
 import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStfingifyStream";
 import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStfingifyStream";
-import { OutputSequenceStream } from "./OutputSequenceStream";
-import type { OutputSequenceStreamOptions } from "./OutputSequenceStream";
+import { OutputRecordSequenceStream } from "./OutputRecordSequenceStream";
+import type { OutputRecordSequenceStreamOptions } from "./OutputRecordSequenceStream";
 
-export type OutputJsonSequenceStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputSequenceStreamOptions;
+export type OutputJsonSequenceStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputRecordSequenceStreamOptions;
 
 function makeInternalOutputJsonSequenceStream<T>(options: OutputJsonSequenceStreamOptions<T>) {
   const { lineBegin, lineEnd, stringify, errorFallback } = options;
   const encoder = new TextEncoderStream();
-  const sequence = new OutputSequenceStream({ lineBegin, lineEnd });
+  const sequence = new OutputRecordSequenceStream({ lineBegin, lineEnd });
   const jsonSequence = new OutputJsonSequenceStringifyStream({ stringify, errorFallback });
   const { writable } = jsonSequence;
   const readable = jsonSequence.readable
