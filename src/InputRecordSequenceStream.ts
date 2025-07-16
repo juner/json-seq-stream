@@ -8,7 +8,7 @@ export type InputRecordSequenceStreamOptions = {
   lineBegin?: string;
   lineEnd?: string;
 };
-function makeInternalInputSequenceStream({ lineBegin, lineEnd }: InputRecordSequenceStreamOptions = {}): {
+function makeInternalInputRecordSequenceStream({ lineBegin, lineEnd }: InputRecordSequenceStreamOptions = {}): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   lineBegin ??= LINE_BEGIN;
@@ -51,7 +51,7 @@ function makeInternalInputSequenceStream({ lineBegin, lineEnd }: InputRecordSequ
  */
 export class InputRecordSequenceStream extends TransformStream<string, string> {
   constructor(options?: InputRecordSequenceStreamOptions) {
-    const { args } = makeInternalInputSequenceStream(options);
+    const { args } = makeInternalInputRecordSequenceStream(options);
     super(...args);
   }
 }
