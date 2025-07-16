@@ -8,7 +8,7 @@ export type TextSplitStreamOptions = {
   chunkEndSplit: boolean;
 }
 
-function makeInternalInputSeparatedSeqenceStream({ splitter, chunkEndSplit }: TextSplitStreamOptions): {
+function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const { separator, checker } = makeSeparator(splitter);
@@ -78,7 +78,7 @@ function enqueue(sequence: string[], controller: TransformStreamDefaultControlle
  */
 export class TextSplitStream extends TransformStream<string, string> {
   constructor(options: TextSplitStreamOptions) {
-    const { args } = makeInternalInputSeparatedSeqenceStream(options);
+    const { args } = makeInternalTextSplitStream(options);
     super(...args);
   }
 }
