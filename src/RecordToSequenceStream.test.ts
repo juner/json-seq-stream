@@ -32,7 +32,6 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveLength(2);
 });
 
-
 test("enqueue fallbackSkip", async ({ expect }) => {
   const BEGIN = "|";
   const END = "";

@@ -27,7 +27,8 @@ test("stringify empty", async ({ expect }) => {
   await writer.close();
   const array = await arrayWait;
   expect(array).toHaveLength(0);
-})
+});
+
 test("enqueue", async ({ expect }) => {
   type Value = {
     value: number;

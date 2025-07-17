@@ -10,6 +10,7 @@ test("empty", async ({ expect }) => {
   const array = await Array.fromAsync(readable.values())
   expect(array.length).toEqual(0);
 });
+
 test("enqueue", async ({ expect }) => {
   type Value = {
     value: number;

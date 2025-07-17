@@ -9,7 +9,6 @@ test("empty", async ({expect}) => {
   expect(array).toHaveLength(0);
 });
 
-
 test("enqueue", async ({expect}) => {
   const {readable, writable} = new InputRecordSequenceStream();
   const writer = writable.getWriter();
