@@ -41,7 +41,22 @@ function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSpli
 }
 
 /**
- * Converts a sequence into a stream with a delimiter.
+ * A TransformStream that joins incoming string chunks using a specified delimiter.
+ *
+ * This stream inserts the delimiter between chunks, and can optionally:
+ * - insert a delimiter at the start (`start: true`)
+ * - insert a delimiter at the end (`end: true`)
+ * - skip empty string chunks (`skip: true`)
+ *
+ * This is useful for constructing joined strings from a stream of segments,
+ * such as building CSV lines, JSON arrays, or custom formatted output.
+ *
+ * Example:
+ * ```text
+ *   Input chunks: ["foo", "bar", "baz"]
+ *   Options: { delimiter: ",", start: false, end: true, skip: false }
+ *   Output chunks: ["foo", ",", "bar", ",", "baz", ","]
+ * ```
  */
 export class TextJoinStream extends TransformStream<string, string> {
   constructor(options: TextJoinStreamOptions) {

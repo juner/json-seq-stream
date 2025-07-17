@@ -73,7 +73,27 @@ function enqueue(sequence: string[], controller: TransformStreamDefaultControlle
 }
 
 /**
- * A stream that converts an arbitrary delimited string into a sequence.
+ * A TransformStream that splits incoming string chunks by specified delimiters
+ * and emits each segment as a separate chunk.
+ *
+ * This stream allows splitting based on one or more delimiters (characters or strings),
+ * and supports optional flushing at the end of each input chunk.
+ *
+ * Options:
+ * - `splitter`: A string or array of strings used as delimiters.
+ * - `chunkEndSplit`: If `true`, forces split and flush at the end of each input chunk.
+ *
+ * Empty segments resulting from splitting are automatically skipped.
+ *
+ * Example:
+ * ```text
+ *   Input chunk: "foo,bar|baz"
+ *   Options: { splitter: [",", "|"], chunkEndSplit: true }
+ *   Output chunks: ["foo", "bar", "baz"]
+ * ```
+ *
+ * Useful for processing delimited text data such as CSV rows, log lines,
+ * or command sequences.
  */
 export class TextSplitStream extends TransformStream<string, string> {
   constructor(options: TextSplitStreamOptions) {

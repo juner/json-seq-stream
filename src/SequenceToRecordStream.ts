@@ -27,6 +27,20 @@ function makeInternalSequenceToRecordStream({ begin: recordBegin, end: recordEnd
   };
 }
 
+/**
+ * A TransformStream that wraps each input string chunk with a specified begin and end delimiter,
+ * optionally skipping empty chunks.
+ *
+ * This stream is useful for converting plain string sequences into delimited records, such as
+ * preparing data for structured streaming protocols or framing messages.
+ *
+ * Example:
+ * ```example:text
+ *   Input chunks: ["foo", "", "bar"]
+ *   With begin = "<", end = ">", and skip = true
+ *   Output chunks: ["<", "foo", ">", "<", "bar", ">"]
+ * ```
+ */
 export class SequenceToRecordStream extends TransformStream<string, string> {
   constructor(options: SequenceToRecordStreamOptions) {
     const { args } = makeInternalSequenceToRecordStream(options);
