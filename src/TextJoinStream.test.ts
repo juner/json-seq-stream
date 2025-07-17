@@ -13,6 +13,22 @@ test("empty", async ({ expect }) => {
   expect(text).toHaveLength(0);
 });
 
+test("add empty start / end delimiter", async ({ expect }) => {
+  const { response, writable } = make({
+    delimiter: ",",
+    start: true,
+    end: true,
+    skip: false,
+  });
+  (async () => {
+    const writer = writable.getWriter();
+    await writer.write("");
+    await writer.close();
+  })();
+  const text = await response.text();
+  expect(text).equal(',,');
+});
+
 test("enqueue", async ({ expect }) => {
   const { response, writable } = make({
     delimiter: "|",
