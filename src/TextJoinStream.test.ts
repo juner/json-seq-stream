@@ -53,9 +53,9 @@ test("enqueue and start / end delimiter", async ({ expect }) => {
   const text = await response.text();
   expect(text).equal("|鶏|猫|犬|驢馬|");
 });
+
 function make(options: ConstructorParameters<typeof TextJoinStream>[0]) {
   const { readable, writable } = new TextJoinStream(options);
   const response = new Response(readable.pipeThrough(new TextEncoderStream()));
-  response.headers.append("content-type", JsonLinesMimeType);
   return { writable, response };
 }
