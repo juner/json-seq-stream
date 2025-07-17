@@ -1,13 +1,13 @@
 import type { TransformStreamConstructor } from "./TransformStreamConstructor";
 
 export type TextJoinStreamOptions = {
-  /** separator character */
+  /** delimiter character */
   delimiter: string;
-  /** start split force */
+  /** insert a delimiter at the start */
   start: boolean;
-  /** end split force */
+  /** insert a delimiter at the end */
   end: boolean;
-  /** skip empty string */
+  /** skip empty string chunks */
   skip: boolean;
 }
 
