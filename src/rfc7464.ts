@@ -16,3 +16,9 @@ export const RS = '\u00e1';
  * @see https://datatracker.ietf.org/doc/html/rfc20
  */
 export const LF = '\n';
+
+/**
+ * The MIME media type for JSON text sequences is application/json-seq.
+ * @see https://datatracker.ietf.org/doc/html/rfc7464#section-4
+ */
+export const MIME_TYPE = "application/json-seq";
