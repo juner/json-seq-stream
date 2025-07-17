@@ -1,36 +1,24 @@
 import { LF, RS } from "./rfc7464";
-import type { TransformStreamConstructor } from "./TransformStreamConstructor";
+import { SequenceToRecordStream } from "./SequenceToRecordStream";
+import type { SequenceToRecordStreamOptions } from "./SequenceToRecordStream";
 
-const LINE_BEGIN = RS;
-const LINE_END = LF;
+const RECORD_BEGIN = RS;
+const RECORD_END = LF;
+const SKIP = false;
 
-export type OutputRecordSequenceStreamOptions = {
-  lineBegin?: string;
-  lineEnd?: string;
-};
-function makeInternalOutputRecordSequenceStream({ lineBegin, lineEnd }: OutputRecordSequenceStreamOptions = {}): {
-  args: ConstructorParameters<TransformStreamConstructor<string, string>>
-} {
-  lineBegin ??= LINE_BEGIN;
-  lineEnd ??= LINE_END;
-  const args: ConstructorParameters<TransformStreamConstructor<string, string>> = [
-    {
-      transform(chunk: string, controller: TransformStreamDefaultController<string>) {
-        controller.enqueue(`${lineBegin}${chunk}${lineEnd}`);
-      },
-    }
-  ];
-  return {
-    args,
-  };
-}
+export type OutputRecordSequenceStreamOptions = Partial<SequenceToRecordStreamOptions>;
+
 /**
- * 行データを RS で始まって LF で1行を表す 連続した文字列データに変換する
+ * Converts line data into continuous string data starting with RS and each LF represents one line.
  */
-export class OutputRecordSequenceStream extends TransformStream<string, string> {
+export class OutputRecordSequenceStream extends SequenceToRecordStream {
   constructor(options?: OutputRecordSequenceStreamOptions) {
-    const { args } = makeInternalOutputRecordSequenceStream(options);
-    super(...args);
+    // eslint-disable-next-line prefer-const
+    let { begin: recordBegin, end: recordEnd, skip, ...args } = options ?? {}
+    recordBegin ??= RECORD_BEGIN;
+    recordEnd ??= RECORD_END;
+    skip ??= SKIP;
+    super({ begin: recordBegin, end: recordEnd, skip, ...args });
   }
 }
 
@@ -38,9 +26,9 @@ export class OutputRecordSequenceStream extends TransformStream<string, string> 
 
 /**
  * @deprecated rename to OutputRecordSequenceStreamOptions
- * @see OutputRecordSequenceStreamOptions
+ * @see SequenceToRecordStreamOptions
  */
-export type OutputSequenceStreamOptions = OutputRecordSequenceStreamOptions;
+export type OutputSequenceStreamOptions = SequenceToRecordStreamOptions;
 
 /**
  * @deprecated rename to OutputRecordSequenceStream

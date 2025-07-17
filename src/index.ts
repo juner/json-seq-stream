@@ -11,3 +11,7 @@ export * from "./OutputJsonSequenceStream";
 export * from "./InputLineFeedSeparattedSequenceStream";
 export * from "./OutputTextJoinLineFeedSequenceStream";
 //#endregion
+
+//#region sequence -> record / record -> sequence
+export * from "./SequenceToRecordStream";
+//#endregion

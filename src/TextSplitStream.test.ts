@@ -15,13 +15,12 @@ test("enqueue", async ({ expect }) => {
     splitter,
     chunkEndSplit,
   });
-  const promises: Promise<unknown>[] = [];
-  promises.push((async () => {
+  (async () => {
     const writer = writable.getWriter();
     await writer.write(`${splitter}猫猫${splitter}犬犬`);
     await writer.write(`鳥鳥${splitter}猿猿${splitter}`);
     await writer.close();
-  })());
+  })();
   const array = await Array.fromAsync(readable);
   expect(array).toHaveLength(4);
   expect(array).toHaveProperty("0", "猫猫");
