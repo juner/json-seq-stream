@@ -19,3 +19,5 @@ export * from "./RecordToSequenceStream";
 
 // #region object -> text / text -> object
 export * from "./StringifyStream";
+export * from "./ParseStream";
+// #endregion
