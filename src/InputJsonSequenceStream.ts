@@ -20,23 +20,18 @@ function makeInternalJsonSequenceStream<T>(options: InputJsonSequenceStreamOptio
 /**
  * fetch 等の stream() に接続する目的の application/json-seq フォーマットを T型の json として パースする Stream
  */
-class InputJsonSequenceStream<T> extends TransformStream<BufferSource, T> {
+export class InputJsonSequenceStream<T> implements ReadableWritablePair<T, BufferSource> {
   #writable: WritableStream<BufferSource>;
   #readable: ReadableStream<T>;
   get writable() { return this.#writable; }
   get readable() { return this.#readable; }
   constructor(options: InputJsonSequenceStreamOptions<T> = {}) {
-    super();
     ({
       readable: this.#readable,
       writable: this.#writable
     } = makeInternalJsonSequenceStream(options))
   }
 }
-export {
-  InputJsonSequenceStream,
-  InputJsonSequenceStream as default,
-};
 
 // #region deprecated remove to version 2.0.0 -
 

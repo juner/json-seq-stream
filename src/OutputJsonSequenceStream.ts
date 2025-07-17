@@ -20,13 +20,12 @@ function makeInternalOutputJsonSequenceStream<T>(options: OutputJsonSequenceStre
 /**
  * T型 を application/json-seq フォーマットに変換する Stream
  */
-export class OutputJsonSequenceStream<T> extends TransformStream<T, BufferSource> {
+export class OutputJsonSequenceStream<T> implements ReadableWritablePair<BufferSource, T> {
   #writable: WritableStream<T>;
   #readable: ReadableStream<BufferSource>;
   get writable() { return this.#writable; }
   get readable() { return this.#readable; }
   constructor(options: OutputJsonSequenceStreamOptions<T> = {}) {
-    super();
     ({
       readable: this.#readable,
       writable: this.#writable
