@@ -72,5 +72,7 @@ for await (const chunk of readable) {
 
 - RFC 7464 - JavaScript Object Notation (JSON) Text Sequences \
 [https://datatracker.ietf.org/doc/html/rfc7464](https://datatracker.ietf.org/doc/html/rfc7464)
-- JSON Lines - A convenient format for structured logs
+- JSON Lines \
 [https://jsonlines.org](https://jsonlines.org)
+- JSON streaming - Wikipedia (en) \
+[https://en.wikipedia.org/wiki/JSON_streaming](https://en.wikipedia.org/wiki/JSON_streaming)
