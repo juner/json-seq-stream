@@ -16,3 +16,6 @@ export * from "./OutputTextJoinLineFeedSequenceStream";
 export * from "./SequenceToRecordStream";
 export * from "./RecordToSequenceStream";
 //#endregion
+
+// #region object -> text / text -> object
+export * from "./StringifyStream";
