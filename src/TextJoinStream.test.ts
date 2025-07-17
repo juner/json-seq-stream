@@ -3,28 +3,24 @@ import { TextJoinStream } from "./TextJoinStream";
 import { MIME_TYPE as JsonLinesMimeType } from "./jsonlines";
 
 test("empty", async ({ expect }) => {
-  const { readable, writable } = new TextJoinStream({
+  const { response, writable } = make({
     delimiter: "",
     start: true,
     end: true,
     skip: true,
   });
-  const response = new Response(readable.pipeThrough(new TextEncoderStream()));
-  response.headers.append("content-type", JsonLinesMimeType);
   await writable.close();
   const text = await response.text();
   expect(text).toHaveLength(0);
 });
 
 test("enqueue", async ({ expect }) => {
-  const { readable, writable } = new TextJoinStream({
+  const { response, writable } = make({
     delimiter: "|",
     start: false,
     end: false,
     skip: false,
   });
-  const response = new Response(readable.pipeThrough(new TextEncoderStream()));
-  response.headers.append("content-type", JsonLinesMimeType);
   (async () => {
     const writer = writable.getWriter();
     await writer.write("鶏");
@@ -39,14 +35,12 @@ test("enqueue", async ({ expect }) => {
 });
 
 test("enqueue and start / end delimiter", async ({ expect }) => {
-  const { readable, writable } = new TextJoinStream({
+  const { writable, response } = make({
     delimiter: "|",
     start: true,
     end: true,
     skip: true,
   });
-  const response = new Response(readable.pipeThrough(new TextEncoderStream()));
-  response.headers.append("content-type", JsonLinesMimeType);
   (async () => {
     const writer = writable.getWriter();
     await writer.write("鶏");
@@ -59,3 +53,9 @@ test("enqueue and start / end delimiter", async ({ expect }) => {
   const text = await response.text();
   expect(text).equal("|鶏|猫|犬|驢馬|");
 });
+function make(options: ConstructorParameters<typeof TextJoinStream>[0]) {
+  const { readable, writable } = new TextJoinStream(options);
+  const response = new Response(readable.pipeThrough(new TextEncoderStream()));
+  response.headers.append("content-type", JsonLinesMimeType);
+  return { writable, response };
+}
