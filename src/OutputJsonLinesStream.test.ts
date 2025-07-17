@@ -3,7 +3,7 @@ import { OutputJsonLinesStream } from ".";
 import { MIME_TYPE } from "./jsonlines";
 
 test("empty", async ({ expect }) => {
-  const {writable, response} = make();
+  const { writable, response } = make();
   await writable.close();
   const array = await response.text();
   expect(array).toHaveLength(0);
