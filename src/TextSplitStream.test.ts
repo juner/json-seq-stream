@@ -1,8 +1,11 @@
 import { test } from "vitest";
-import { InputLineFeedSeparattedSequenceStream, TextSplitStream } from ".";
+import { TextSplitStream } from ".";
 
 test("empty", async ({ expect }) => {
-  const { readable, writable } = new InputLineFeedSeparattedSequenceStream();
+  const { readable, writable } = new TextSplitStream({
+    splitter: "",
+    chunkEndSplit: false,
+  });
   await writable.close();
   const array = await Array.fromAsync(readable.values());
   expect(array).toHaveLength(0);

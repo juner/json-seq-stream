@@ -15,6 +15,8 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
   const args: ConstructorParameters<TransformStreamConstructor<string, string>> = [
     {
       transform(chunk, controller) {
+        if (!chunkEndSplit)
+          chunk = [...sequence.splice(0, sequence.length),chunk].join("");
         for (const c of chunk.split(separator)) {
 
           // skip empty string
