@@ -52,7 +52,7 @@ export class InputJsonSequenceStream<T> implements ReadableWritablePair<T, Buffe
     ({
       readable: this.#readable,
       writable: this.#writable
-    } = makeInternalJsonSequenceStream(options))
+    } = makeInternalJsonSequenceStream(options));
   }
 }
 

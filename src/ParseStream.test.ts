@@ -7,7 +7,7 @@ test("empty", async ({ expect }) => {
     errorFallback: false,
   });
   await writable.close();
-  const array = await Array.fromAsync(readable.values())
+  const array = await Array.fromAsync(readable.values());
   expect(array.length).toEqual(0);
 });
 

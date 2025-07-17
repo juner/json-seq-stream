@@ -4,7 +4,7 @@ import { InputJsonSequenceParseStream } from ".";
 test("empty", async ({ expect }) => {
   const { readable, writable } = new InputJsonSequenceParseStream();
   await writable.close();
-  const array = await Array.fromAsync(readable.values())
+  const array = await Array.fromAsync(readable.values());
   expect(array.length).toEqual(0);
 });
 test("enqueue", async ({ expect }) => {

@@ -53,6 +53,6 @@ export class InputJsonLinesStream<T> implements ReadableWritablePair<T, BufferSo
     ({
       readable: this.#readable,
       writable: this.#writable
-    } = makeInternalJsonLinesStream(options))
+    } = makeInternalJsonLinesStream(options));
   }
 }

@@ -56,7 +56,7 @@ function makeSeparator(separater: string[] | string) {
   return {
     separator: new RegExp(`(${parts})`, "ug"),
     checker: new RegExp(`^(${parts})$`),
-  }
+  };
 }
 
 /**

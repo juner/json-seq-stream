@@ -4,7 +4,7 @@ import { OutputJsonSequenceStringifyStream } from ".";
 test("empty", async ({ expect }) => {
   const { readable, writable } = new OutputJsonSequenceStringifyStream();
   await writable.close();
-  const array = await Array.fromAsync(readable.values())
+  const array = await Array.fromAsync(readable.values());
   expect(array.length).toEqual(0);
 });
 
@@ -23,7 +23,7 @@ test("stringify empty", async ({ expect }) => {
   await writer.close();
   const array = await arrayWait;
   expect(array).toHaveLength(0);
-})
+});
 
 test("enqueue", async ({ expect }) => {
   type Value = {

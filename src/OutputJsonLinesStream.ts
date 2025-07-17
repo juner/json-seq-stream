@@ -57,6 +57,6 @@ export class OutputJsonLinesStream<T> implements ReadableWritablePair<BufferSour
     ({
       readable: this.#readable,
       writable: this.#writable
-    } = makeInternalOutputJsonLinesStream(options))
+    } = makeInternalOutputJsonLinesStream(options));
   }
 }

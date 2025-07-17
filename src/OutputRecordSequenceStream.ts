@@ -14,7 +14,7 @@ export type OutputRecordSequenceStreamOptions = Partial<SequenceToRecordStreamOp
 export class OutputRecordSequenceStream extends SequenceToRecordStream {
   constructor(options?: OutputRecordSequenceStreamOptions) {
     // eslint-disable-next-line prefer-const
-    let { begin: recordBegin, end: recordEnd, skip, ...args } = options ?? {}
+    let { begin: recordBegin, end: recordEnd, skip, ...args } = options ?? {};
     recordBegin ??= RECORD_BEGIN;
     recordEnd ??= RECORD_END;
     skip ??= SKIP;

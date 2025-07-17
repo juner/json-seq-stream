@@ -6,7 +6,7 @@ test("empty", async ({ expect }) => {
     begin: "",
     end: "",
     skip: false,
-  })
+  });
   await writable.close();
   const text = await response.text();
   expect(text).toHaveLength(0);
