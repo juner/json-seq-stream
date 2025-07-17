@@ -1,12 +1,15 @@
 import { LF } from "./jsonlines";
-import { TextJoinStream, TextJoinStreamOptions } from "./TextJoinStream";
+import { TextJoinStream } from "./TextJoinStream";
+import type { TextJoinStreamOptions } from "./TextJoinStream";
+
+export type OutputTextJoinLineFeedSequenceStreamOptions = Partial<TextJoinStreamOptions>;
 
 /**
  * Put LF between sequences Convert to a stream
  */
 
 export class OutputTextJoinLineFeedSequenceStream extends TextJoinStream {
-  constructor(options?: Partial<TextJoinStreamOptions>) {
+  constructor(options?: OutputTextJoinLineFeedSequenceStreamOptions) {
 
     let { delimiter, start: startSplit, end: endSplit, skip } = options ?? {};
     delimiter ??= LF;
