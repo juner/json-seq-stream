@@ -77,7 +77,7 @@ test("error to enqueue", async ({ expect }) => {
     value: unknown;
   };
   const { readable, writable } = new StringifyStream<Value>({
-    errorFallback: async (e, { enqueue }) => {
+    errorFallback: async (_e, { enqueue }) => {
       const { resolve, promise } = Promise.withResolvers<void>();
       queueMicrotask(resolve);
       await promise;
