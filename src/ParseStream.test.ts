@@ -1,17 +1,24 @@
 import { test } from "vitest";
-import { InputJsonSequenceParseStream } from ".";
+import { ParseStream } from ".";
 
 test("empty", async ({ expect }) => {
-  const { readable, writable } = new InputJsonSequenceParseStream();
+  const { readable, writable } = new ParseStream({
+    parse: () => ``,
+    errorFallback: false,
+  });
   await writable.close();
   const array = await Array.fromAsync(readable.values());
   expect(array.length).toEqual(0);
 });
+
 test("enqueue", async ({ expect }) => {
   type Value = {
     value: number;
   };
-  const { readable, writable } = new InputJsonSequenceParseStream<Value>();
+  const { readable, writable } = new ParseStream<Value>({
+    parse: JSON.parse,
+    errorFallback:false,
+  });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push(writer.write(JSON.stringify({ "value": 10 })));
@@ -29,7 +36,10 @@ test("error to skip", async ({ expect }) => {
   type Value = {
     value: number;
   };
-  const { readable, writable } = new InputJsonSequenceParseStream<Value>();
+  const { readable, writable } = new ParseStream<Value>({
+    parse: JSON.parse,
+    errorFallback: false,
+  });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push(writer.write("{value: 10}"));
@@ -47,7 +57,8 @@ test("error to enqueue", async ({ expect }) => {
   } | {
     error: unknown;
   };
-  const { readable, writable } = new InputJsonSequenceParseStream<Value>({
+  const { readable, writable } = new ParseStream<Value>({
+    parse: JSON.parse,
     errorFallback: async (e, { enqueue }) => {
       const {resolve, promise } = Promise.withResolvers<void>();
       queueMicrotask(resolve);
@@ -73,7 +84,8 @@ test("error to error", async ({ expect, }) => {
   } | {
     error: unknown;
   };
-  const { readable, writable } = new InputJsonSequenceParseStream<Value>({
+  const { readable, writable } = new ParseStream<Value>({
+    parse: JSON.parse,
     errorFallback: (_e, { error }) => {
       error(new Error("sample-error", {cause: [_e]}));
     }

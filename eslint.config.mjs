@@ -15,6 +15,11 @@ export default defineConfig([
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], plugins: { js }, extends: ["js/recommended"] },
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   tseslint.configs.recommended,
+  {
+    rules: {
+      "semi": "error",
+    }
+  },
   { files: ["**/*.json"], ignores: ["**/tsconfig.json", "package-lock.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
   {
     files: [

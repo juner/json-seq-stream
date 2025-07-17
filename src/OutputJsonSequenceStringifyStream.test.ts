@@ -4,7 +4,7 @@ import { OutputJsonSequenceStringifyStream } from ".";
 test("empty", async ({ expect }) => {
   const { readable, writable } = new OutputJsonSequenceStringifyStream();
   await writable.close();
-  const array = await Array.fromAsync(readable.values())
+  const array = await Array.fromAsync(readable.values());
   expect(array.length).toEqual(0);
 });
 
@@ -12,18 +12,19 @@ test("stringify empty", async ({ expect }) => {
   type Value = {
     value: number;
   };
-  const { readable, writable} = new OutputJsonSequenceStringifyStream<Value>({
+  const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
     stringify: () => undefined,
   });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
-  promises.push(writer.write({"value": 0}));
+  promises.push(writer.write({ "value": 0 }));
   const arrayWait = Array.fromAsync(readable.values());
   promises.push(arrayWait);
   await writer.close();
   const array = await arrayWait;
   expect(array).toHaveLength(0);
-})
+});
+
 test("enqueue", async ({ expect }) => {
   type Value = {
     value: number;
@@ -49,8 +50,8 @@ test("error to skip", async ({ expect }) => {
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>();
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
-  const value1:Value = {value: undefined};
-  const value2:Value = {value: undefined};
+  const value1: Value = { value: undefined };
+  const value2: Value = { value: undefined };
   value1.value = value2;
   value2.value = value1;
   promises.push(writer.write(value1));
@@ -67,7 +68,7 @@ test("error to enqueue", async ({ expect }) => {
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
     errorFallback: async (e, { enqueue }) => {
-      const {resolve, promise } = Promise.withResolvers<void>();
+      const { resolve, promise } = Promise.withResolvers<void>();
       queueMicrotask(resolve);
       await promise;
       enqueue(`error`);
@@ -75,8 +76,8 @@ test("error to enqueue", async ({ expect }) => {
   });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
-  const value1:Value = {value:undefined};
-  const value2:Value = {value:undefined};
+  const value1: Value = { value: undefined };
+  const value2: Value = { value: undefined };
   value1.value = value2;
   value2.value = value1;
   promises.push(writer.write(value1));
@@ -94,14 +95,14 @@ test("error to error", async ({ expect, }) => {
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
     errorFallback: (_e, { error }) => {
-      error(new Error("sample-error", {cause: [_e]}));
+      error(new Error("sample-error", { cause: [_e] }));
     }
   });
   const writer = writable.getWriter();
   async function call() {
     const promises: Promise<unknown>[] = [];
-    const value1: Value = {value: undefined};
-    const value2: Value = {value: undefined};
+    const value1: Value = { value: undefined };
+    const value2: Value = { value: undefined };
     value1.value = value2;
     value2.value = value1;
     promises.push(writer.write(value1));
