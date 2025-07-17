@@ -6,9 +6,9 @@ import type { InputRecordSequenceStreamOptions } from "./InputRecordSequenceStre
 export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputRecordSequenceStreamOptions;
 
 function makeInternalJsonSequenceStream<T>(options: InputJsonSequenceStreamOptions<T>) {
-  const { label, fatal, lineBegin, lineEnd, parse, errorFallback } = options;
+  const { label, fatal, begin, end, parse, errorFallback } = options;
   const decoder = new TextDecoderStream(label, { fatal });
-  const sequence = new InputRecordSequenceStream({ lineBegin, lineEnd });
+  const sequence = new InputRecordSequenceStream({ begin, end });
   const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback });
   const { writable } = decoder;
   const readable = decoder.readable

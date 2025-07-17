@@ -14,4 +14,5 @@ export * from "./OutputTextJoinLineFeedSequenceStream";
 
 //#region sequence -> record / record -> sequence
 export * from "./SequenceToRecordStream";
+export * from "./RecordToSequenceStream";
 //#endregion
