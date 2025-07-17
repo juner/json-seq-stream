@@ -1,5 +1,5 @@
-import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStfingifyStream";
-import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStfingifyStream";
+import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringifyStream";
+import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream";
 import { OutputRecordSequenceStream } from "./OutputRecordSequenceStream";
 import type { OutputRecordSequenceStreamOptions } from "./OutputRecordSequenceStream";
 
