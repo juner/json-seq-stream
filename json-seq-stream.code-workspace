@@ -37,7 +37,9 @@
         "recommendations": [
             "dbaeumer.vscode-eslint",
             "vitest.explorer",
-            "ryanluker.vscode-coverage-gutters"
+            "ryanluker.vscode-coverage-gutters",
+            "editorconfig.editorconfig",
+            "usernamehw.errorlens"
         ]
     }
 }
