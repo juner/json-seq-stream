@@ -1,6 +1,5 @@
 import { test } from "vitest";
 import { TextJoinStream } from "./TextJoinStream";
-import { MIME_TYPE as JsonLinesMimeType } from "./jsonlines";
 
 test("empty", async ({ expect }) => {
   const { response, writable } = make({
