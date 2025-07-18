@@ -99,27 +99,7 @@
 - release
   - 2025/07/10
 
-## v1.0.4
-
-🐛 noop
-
-## v1.0.3
-
-🐛 noop
-
-## v1.0.2
-
-🐛 noop
-
-## v1.0.1
-
-🐛 noop
-
-## v1.0.0
-
-🐛 noop
-
-- features
+- new features
   - `JsonSequenceFormatStream<T>`
     - `JSON Text <T>` Sequence -> object `T` Sequence
   - `JsonSequenceStream<T>`
