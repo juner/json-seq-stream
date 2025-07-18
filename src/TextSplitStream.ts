@@ -52,7 +52,7 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
 function makeSeparator(separater: string[] | string) {
   if (typeof separater === "string")
     separater = [separater];
-  const parts = separater.map(s => RegExp.escape(s)).join('|');
+  const parts = separater.map(s => RegExp.escape(s)).join("|");
   return {
     separator: new RegExp(`(${parts})`, "ug"),
     checker: new RegExp(`^(${parts})$`),

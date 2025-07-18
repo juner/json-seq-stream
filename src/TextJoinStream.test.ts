@@ -26,7 +26,7 @@ test("add empty start / end delimiter", async ({ expect }) => {
     await writer.close();
   })();
   const text = await response.text();
-  expect(text).equal(',,');
+  expect(text).equal(",,");
 });
 
 test("enqueue", async ({ expect }) => {

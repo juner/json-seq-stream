@@ -21,8 +21,8 @@ test("enqueue", async ({ expect }) => {
   (async () => {
     const writer = writable.getWriter();
     await writer.write(`T`);
-    await writer.write('');
-    await writer.write('HOGEFUGA');
+    await writer.write("");
+    await writer.write("HOGEFUGA");
     await writer.close();
   })();
   const text = await response.text();
