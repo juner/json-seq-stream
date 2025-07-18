@@ -1,6 +1,6 @@
 import js from "@eslint/js";
 import globals from "globals";
-import tseslint, { ConfigWithExtends } from "typescript-eslint";
+import tseslint from "typescript-eslint";
 import json from "@eslint/json";
 import markdown from "@eslint/markdown";
 import { defineConfig } from "eslint/config";
