@@ -1,6 +1,6 @@
 import js from "@eslint/js";
 import globals from "globals";
-import tseslint from "typescript-eslint";
+import tseslint, { ConfigWithExtends } from "typescript-eslint";
 import json from "@eslint/json";
 import markdown from "@eslint/markdown";
 import { defineConfig } from "eslint/config";
@@ -15,7 +15,7 @@ export default defineConfig([
   },
   { files: [`**/*.{js,mjs,cjs,ts,mts,cts}`], plugins: { js }, extends: [`js/recommended`] },
   { files: [`**/*.{js,mjs,cjs,ts,mts,cts}`], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
-  tseslint.configs.recommended,
+  tseslint.configs.recommended as unknown as Parameters<typeof defineConfig>,
   {
     plugins: {
       "@stylistic": stylistic,
