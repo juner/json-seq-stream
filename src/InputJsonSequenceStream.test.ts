@@ -1,6 +1,5 @@
 import { test } from "vitest";
 import { InputJsonSequenceStream } from ".";
-import { LF, RS } from "./rfc7464";
 
 test("empty", async ({ expect }) => {
   type Value = {
@@ -17,7 +16,7 @@ test("enqueue", async ({ expect }) => {
     value: number;
   };
   const sequenceStream = new InputJsonSequenceStream<Value>();
-  const blob = new Blob([`${RS}{"value":30}${LF}${RS}{"value":3}`]);
+  const blob = new Blob([`\u001e{"value":30}\n\u001e{"value":3}`]);
   const file = new File([blob], "json-seq.json-seq", { type: "application/json-seq" });
   const url = URL.createObjectURL(file);
   await using stack = new AsyncDisposableStack();

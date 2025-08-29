@@ -30,7 +30,7 @@ export default defineConfig([
         destructuredArrayIgnorePattern: `^_`,
         varsIgnorePattern: `^_`,
       }],
-      "@stylistic/quotes": [`error`, "double", { "allowTemplateLiterals": true }],
+      "@stylistic/quotes": [`error`, "double", { "allowTemplateLiterals": "always" }],
     }
   },
   { files: [`**/*.json`], ignores: [`**/tsconfig.json`, `package-lock.json`], plugins: { json }, language: `json/json`, extends: [`json/recommended`] },
