@@ -1,6 +1,5 @@
 import { test } from "vitest";
 import { OutputTextJoinLineFeedSequenceStream } from ".";
-import { LF } from "./jsonlines";
 
 test("enqueue", async ({expect})=> {
   const {readable, writable} = new OutputTextJoinLineFeedSequenceStream();
@@ -14,5 +13,5 @@ test("enqueue", async ({expect})=> {
     await writer.close();
   })();
   const text = await response.text();
-  expect(text).equal(`🐈🐶${LF}🐒🐓${LF}🐕🐗`);
+  expect(text).equal(`🐈🐶\n🐒🐓\n🐕🐗`);
 });
