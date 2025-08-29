@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v1.0.8
+
+🐛 Bug fix for record separator (RS).
+
+- [npm:json-seq-stream@1.0.8](https://www.npmjs.com/package/json-seq-stream/v/1.0.8)  
+- [github:juner/json-seq-stream/releases/tag/v1.0.8](https://github.com/juner/json-seq-stream/releases/tag/v1.0.8)
+
+- release  
+  - 2025/08/29  
+
+- fix  
+  - Incorrectly used `\u00e1` instead of the correct `\u001e` for RS (Record Separator). 
+
 ## v1.0.7
 
 🚀 Supports `application/jsonl` (JSON Lines) and `application/x-ndjson` (NDJSON) and some generalization of functionality.
