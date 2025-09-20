@@ -1,6 +1,6 @@
-import { LF } from "./jsonlines";
-import { TextJoinStream } from "./TextJoinStream";
-import type { TextJoinStreamOptions } from "./TextJoinStream";
+import { LF } from "./jsonlines.js";
+import { TextJoinStream } from "./TextJoinStream.js";
+import type { TextJoinStreamOptions } from "./TextJoinStream.js";
 
 export type OutputTextJoinLineFeedSequenceStreamOptions = Partial<TextJoinStreamOptions>;
 

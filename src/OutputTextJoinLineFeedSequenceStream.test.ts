@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { OutputTextJoinLineFeedSequenceStream } from ".";
+import { OutputTextJoinLineFeedSequenceStream } from "./index.js";
 
 test("enqueue", async ({expect})=> {
   const {readable, writable} = new OutputTextJoinLineFeedSequenceStream();

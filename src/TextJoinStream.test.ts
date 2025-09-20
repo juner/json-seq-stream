@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { TextJoinStream } from "./TextJoinStream";
+import { TextJoinStream } from "./TextJoinStream.js";
 
 test("empty", async ({ expect }) => {
   const { response, writable } = make({

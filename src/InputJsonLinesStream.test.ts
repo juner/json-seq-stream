@@ -1,5 +1,5 @@
 import {test} from "vitest";
-import { InputJsonLinesStream } from ".";
+import { InputJsonLinesStream } from "./index.js";
 
 test("empty", async ({expect}) => {
   const {writable, readable} = new InputJsonLinesStream();

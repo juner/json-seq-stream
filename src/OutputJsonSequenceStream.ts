@@ -1,7 +1,7 @@
-import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringifyStream";
-import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream";
-import { OutputRecordSequenceStream } from "./OutputRecordSequenceStream";
-import type { OutputRecordSequenceStreamOptions } from "./OutputRecordSequenceStream";
+import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringifyStream.js";
+import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream.js";
+import { OutputRecordSequenceStream } from "./OutputRecordSequenceStream.js";
+import type { OutputRecordSequenceStreamOptions } from "./OutputRecordSequenceStream.js";
 
 export type OutputJsonSequenceStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputRecordSequenceStreamOptions;
 

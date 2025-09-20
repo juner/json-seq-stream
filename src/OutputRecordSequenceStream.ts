@@ -1,6 +1,6 @@
-import { LF, RS } from "./rfc7464";
-import { SequenceToRecordStream } from "./SequenceToRecordStream";
-import type { SequenceToRecordStreamOptions } from "./SequenceToRecordStream";
+import { LF, RS } from "./rfc7464.js";
+import { SequenceToRecordStream } from "./SequenceToRecordStream.js";
+import type { SequenceToRecordStreamOptions } from "./SequenceToRecordStream.js";
 
 const RECORD_BEGIN = RS;
 const RECORD_END = LF;

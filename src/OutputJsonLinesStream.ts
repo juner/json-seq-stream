@@ -1,7 +1,7 @@
-import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringifyStream";
-import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream";
-import { OutputTextJoinLineFeedSequenceStream } from "./OutputTextJoinLineFeedSequenceStream";
-import type { OutputTextJoinLineFeedSequenceStreamOptions } from "./OutputTextJoinLineFeedSequenceStream";
+import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringifyStream.js";
+import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream.js";
+import { OutputTextJoinLineFeedSequenceStream } from "./OutputTextJoinLineFeedSequenceStream.js";
+import type { OutputTextJoinLineFeedSequenceStreamOptions } from "./OutputTextJoinLineFeedSequenceStream.js";
 
 export type OutputJsonLinesStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputTextJoinLineFeedSequenceStreamOptions;
 

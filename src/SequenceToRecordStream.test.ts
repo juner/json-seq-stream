@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { SequenceToRecordStream } from "./SequenceToRecordStream";
+import { SequenceToRecordStream } from "./SequenceToRecordStream.js";
 
 test("empty", async ({ expect }) => {
   const { writable, response } = make({
