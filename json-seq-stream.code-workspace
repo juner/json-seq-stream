@@ -22,10 +22,6 @@
         "[jsonc]": {
             "editor.tabSize": 2
         },
-		"coverage-gutters.coverageFileNames": [
-			"TestResults/coverage/cobertura-coverage.xml",
-			"TestResults/*/coverage.cobertura.xml"
-		],
         "explorer.fileNesting.enabled": true,
         "explorer.fileNesting.patterns": {
             "*.ts": "${capture}.test.ts",
@@ -37,7 +33,6 @@
         "recommendations": [
             "dbaeumer.vscode-eslint",
             "vitest.explorer",
-            "ryanluker.vscode-coverage-gutters",
             "editorconfig.editorconfig",
             "usernamehw.errorlens"
         ]
