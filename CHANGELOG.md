@@ -9,7 +9,7 @@
   - 2025/11/13
 
 - fix
-  - fix: use modern esm type resolution for consumers with NodeNext [!9](https://github.com/juner/json-seq-stream/pull/9)
+  - fix: use modern esm type resolution for consumers with NodeNext [#9](https://github.com/juner/json-seq-stream/pull/9)
 
 ## v1.0.8
 
