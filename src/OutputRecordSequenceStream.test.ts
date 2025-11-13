@@ -1,6 +1,6 @@
 import { test } from "vitest";
-import { OutputRecordSequenceStream } from ".";
-import { LF, RS } from "./rfc7464";
+import { OutputRecordSequenceStream } from "./index.js";
+import { LF, RS } from "./rfc7464.js";
 
 test("empty", async ({ expect }) => {
   const { response, writable } = make();

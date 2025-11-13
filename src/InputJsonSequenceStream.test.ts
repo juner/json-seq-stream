@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { InputJsonSequenceStream } from ".";
+import { InputJsonSequenceStream } from "./index.js";
 
 test("empty", async ({ expect }) => {
   type Value = {

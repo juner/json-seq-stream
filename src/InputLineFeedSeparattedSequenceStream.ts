@@ -1,5 +1,5 @@
-import { LF, CRLF } from "./jsonlines";
-import { TextSplitStream, TextSplitStreamOptions } from "./TextSplitStream";
+import { LF, CRLF } from "./jsonlines.js";
+import { TextSplitStream, TextSplitStreamOptions } from "./TextSplitStream.js";
 
 export type InputLineFeedSeparattedSequenceStreamOptions = Partial<TextSplitStreamOptions>;
 

@@ -1,5 +1,5 @@
 
-import type { TransformStreamConstructor } from "./TransformStreamConstructor";
+import type { TransformStreamConstructor } from "./TransformStreamConstructor.js";
 
 export type ParseStreamOptions<T> = {
   /** A function that converts a string to type `T`. */

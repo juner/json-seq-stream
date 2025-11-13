@@ -1,5 +1,5 @@
-import { ParseStream } from "./ParseStream";
-import type { ParseStreamOptions } from "./ParseStream";
+import { ParseStream } from "./ParseStream.js";
+import type { ParseStreamOptions } from "./ParseStream.js";
 
 export type InputJsonSequenceParseStreamOptions<T> = Partial<ParseStreamOptions<T>>;
 

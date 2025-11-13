@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { StringifyStream } from ".";
+import { StringifyStream } from "./index.js";
 
 test("empty", async ({ expect }) => {
   const { readable, writable } = new StringifyStream({

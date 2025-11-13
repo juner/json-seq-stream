@@ -1,4 +1,4 @@
-import type { TransformStreamConstructor } from "./TransformStreamConstructor";
+import type { TransformStreamConstructor } from "./TransformStreamConstructor.js";
 
 export type SequenceToRecordStreamOptions = {
   /** record begin character */

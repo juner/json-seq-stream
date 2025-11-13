@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
-    "module": "ESNext",
+    "module": "NodeNext",
     "lib": [
       "ESNext",
       "DOM",
@@ -10,8 +10,8 @@
     ],
     "skipLibCheck": true,
     /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": false,
     "moduleDetection": "force",
     "emitDeclarationOnly": true,
     "declaration": true,

@@ -1,5 +1,5 @@
-import { StringifyStream } from "./StringifyStream";
-import type { StringifyStreamOptions } from "./StringifyStream";
+import { StringifyStream } from "./StringifyStream.js";
+import type { StringifyStreamOptions } from "./StringifyStream.js";
 
 export type OutputJsonSequenceStringifyStreamOptions<T> = Partial<StringifyStreamOptions<T>>;
 

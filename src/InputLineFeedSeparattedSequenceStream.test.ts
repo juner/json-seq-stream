@@ -1,5 +1,5 @@
 import {test} from "vitest";
-import { InputLineFeedSeparattedSequenceStream } from "./InputLineFeedSeparattedSequenceStream";
+import { InputLineFeedSeparattedSequenceStream } from "./InputLineFeedSeparattedSequenceStream.js";
 
 test("enqueue", async ({ expect }) => {
   const { readable, writable } = new InputLineFeedSeparattedSequenceStream();

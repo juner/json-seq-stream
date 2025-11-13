@@ -1,7 +1,7 @@
-import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream";
-import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream";
-import { InputRecordSequenceStream, } from "./InputRecordSequenceStream";
-import type { InputRecordSequenceStreamOptions } from "./InputRecordSequenceStream";
+import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream.js";
+import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream.js";
+import { InputRecordSequenceStream, } from "./InputRecordSequenceStream.js";
+import type { InputRecordSequenceStreamOptions } from "./InputRecordSequenceStream.js";
 
 export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputRecordSequenceStreamOptions;
 

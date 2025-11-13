@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { TextSplitStream } from ".";
+import { TextSplitStream } from "./index.js";
 
 test("empty", async ({ expect }) => {
   const { readable, writable } = new TextSplitStream({
