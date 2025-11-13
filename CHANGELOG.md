@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v1.0.9
+
+- [npm:json-seq-stream@1.0.9](https://www.npmjs.com/package/json-seq-stream/v/1.0.9)
+- [github:juner/json-seq/stream/release/tag/v1.0.9](https://github.com/juner/json-seq-stream/releases/tag/v1.0.9)
+
+- release
+  - 2025/11/13
+
+- fix
+  - fix: use modern esm type resolution for consumers with NodeNext [#9](https://github.com/juner/json-seq-stream/pull/9)
+
 ## v1.0.8
 
 🐛 Bug fix for record separator (RS).
