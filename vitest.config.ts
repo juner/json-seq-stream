@@ -7,6 +7,7 @@ export default defineConfig({
       reportsDirectory: "./TestResults/coverage",
       exclude: [
         ...coverageConfigDefaults.exclude,
+        "utils/**/*.ts",
       ]
     }
   }
