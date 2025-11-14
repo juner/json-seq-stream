@@ -1,6 +1,6 @@
 import { RecordToSequenceStream } from "./RecordToSequenceStream.js";
 import type { RecordToSequenceStreamOptions } from "./RecordToSequenceStream.js";
-import { LF, RS } from "./rfc7464.js";
+import { LF, RS } from "../rfc7464.js";
 
 
 export type InputRecordSequenceStreamOptions = Partial<RecordToSequenceStreamOptions>;

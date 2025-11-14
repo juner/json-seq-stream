@@ -10,7 +10,7 @@ import stylistic from "@stylistic/eslint-plugin";
 export default defineConfig([
   {
     ignores: [
-      `dist/**.*`
+      `dist/**/**.*`
     ]
   },
   { files: [`**/*.{js,mjs,cjs,ts,mts,cts}`], plugins: { js }, extends: [`js/recommended`] },
