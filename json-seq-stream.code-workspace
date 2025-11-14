@@ -36,5 +36,69 @@
             "editorconfig.editorconfig",
             "usernamehw.errorlens"
         ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "npm run lint -- --debug",
+                "type": "shell",
+                "command": "npm",
+                "args": [
+                    "run",
+                    "lint",
+                    "--",
+                    "--debug",
+                ],
+                "problemMatcher": [
+                    "$eslint-stylish"
+                ]
+            },
+            {
+                "label": "npm run lint -- --fix --debug",
+                "type": "shell",
+                "command": "npm",
+                "args": [
+                    "run",
+                    "lint",
+                    "--",
+                    "--fix",
+                    "--debug"
+                ],
+                "problemMatcher": [
+                    "$eslint-stylish"
+                ]
+            },
+            {
+                "label": "npm run build",
+                "type": "shell",
+                "command": "npm",
+                "args": [
+                    "run",
+                    "build",
+                ],
+                "problemMatcher": [ ],
+            },
+            {
+                "label": "npm run test",
+                "type": "shell",
+                "command": "npm",
+                "args": [
+                    "run",
+                    "test",
+                ],
+                "problemMatcher": [ ],
+            },
+            {
+                "label": "npm run test:watch",
+                "type": "shell",
+                "command": "npm",
+                "args": [
+                    "run",
+                    "test:watch",
+                ],
+                "problemMatcher": [ ],
+            },
+        ]
     }
 }
