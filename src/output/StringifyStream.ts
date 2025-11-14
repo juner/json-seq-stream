@@ -1,4 +1,4 @@
-import type { TransformStreamConstructor } from "./TransformStreamConstructor.js";
+import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
 
 export type StringifyStreamOptions<T> = {
   /** A function that converts a `T` value to a string. */

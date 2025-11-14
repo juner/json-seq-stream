@@ -1,4 +1,4 @@
-import type { TransformStreamConstructor } from "./TransformStreamConstructor.js";
+import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
 
 const modes = {
   begin: "begin",

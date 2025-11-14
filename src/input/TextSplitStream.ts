@@ -1,4 +1,4 @@
-import type { TransformStreamConstructor } from "./TransformStreamConstructor.js";
+import type { TransformStreamConstructor } from "../types/index.js";
 
 export type TextSplitStreamOptions = {
   /** separator character */

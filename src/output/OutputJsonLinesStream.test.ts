@@ -1,6 +1,6 @@
 import { test } from "vitest";
-import { OutputJsonLinesStream } from "./index.js";
-import { MIME_TYPE } from "./jsonlines.js";
+import { OutputJsonLinesStream } from "../index.js";
+import { MIME_TYPE } from "../jsonlines.js";
 
 test("empty", async ({ expect }) => {
   const { writable, response } = make();

@@ -1,4 +1,4 @@
-import { LF } from "./jsonlines.js";
+import { LF } from "../jsonlines.js";
 import { TextJoinStream } from "./TextJoinStream.js";
 import type { TextJoinStreamOptions } from "./TextJoinStream.js";
 
