@@ -10,14 +10,14 @@ test("empty", async ({ expect }) => {
 
 test("stringify empty", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
     stringify: () => undefined,
   });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
-  promises.push(writer.write({ "value": 0 }));
+  promises.push(writer.write({ value: 0 }));
   const arrayWait = Array.fromAsync(readable.values());
   promises.push(arrayWait);
   await writer.close();
@@ -27,13 +27,13 @@ test("stringify empty", async ({ expect }) => {
 
 test("enqueue", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>();
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
-  promises.push(writer.write({ "value": 10 }));
-  promises.push(writer.write({ "value": 5 }));
+  promises.push(writer.write({ value: 10 }));
+  promises.push(writer.write({ value: 5 }));
   const arrayWait = Array.fromAsync(readable.values());
   promises.push(arrayWait);
   await writer.close();
@@ -45,7 +45,7 @@ test("enqueue", async ({ expect }) => {
 
 test("error to skip", async ({ expect }) => {
   type Value = {
-    value: unknown;
+    value: unknown
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>();
   const writer = writable.getWriter();
@@ -64,7 +64,7 @@ test("error to skip", async ({ expect }) => {
 
 test("error to enqueue", async ({ expect }) => {
   type Value = {
-    value: unknown;
+    value: unknown
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
     errorFallback: async (e, { enqueue }) => {
@@ -72,7 +72,7 @@ test("error to enqueue", async ({ expect }) => {
       queueMicrotask(resolve);
       await promise;
       enqueue(`error`);
-    }
+    },
   });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
@@ -89,14 +89,14 @@ test("error to enqueue", async ({ expect }) => {
   expect(array).toHaveProperty("0", "error");
 });
 
-test("error to error", async ({ expect, }) => {
+test("error to error", async ({ expect }) => {
   type Value = {
-    value: unknown;
+    value: unknown
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
     errorFallback: (_e, { error }) => {
       error(new Error("sample-error", { cause: [_e] }));
-    }
+    },
   });
   const writer = writable.getWriter();
   async function call() {

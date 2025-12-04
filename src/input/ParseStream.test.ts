@@ -13,16 +13,16 @@ test("empty", async ({ expect }) => {
 
 test("enqueue", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const { readable, writable } = new ParseStream<Value>({
     parse: JSON.parse,
-    errorFallback:false,
+    errorFallback: false,
   });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
-  promises.push(writer.write(JSON.stringify({ "value": 10 })));
-  promises.push(writer.write(JSON.stringify({ "value": 5 })));
+  promises.push(writer.write(JSON.stringify({ value: 10 })));
+  promises.push(writer.write(JSON.stringify({ value: 5 })));
   const arrayWait = Array.fromAsync(readable.values());
   promises.push(arrayWait);
   await writer.close();
@@ -34,7 +34,7 @@ test("enqueue", async ({ expect }) => {
 
 test("error to skip", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const { readable, writable } = new ParseStream<Value>({
     parse: JSON.parse,
@@ -52,19 +52,19 @@ test("error to skip", async ({ expect }) => {
 
 test("error to enqueue", async ({ expect }) => {
   type Value = {
-    value: number;
-    error?: undefined;
+    value: number
+    error?: undefined
   } | {
-    error: unknown;
+    error: unknown
   };
   const { readable, writable } = new ParseStream<Value>({
     parse: JSON.parse,
     errorFallback: async (e, { enqueue }) => {
-      const {resolve, promise } = Promise.withResolvers<void>();
+      const { resolve, promise } = Promise.withResolvers<void>();
       queueMicrotask(resolve);
       await promise;
       enqueue({ error: e });
-    }
+    },
   });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
@@ -77,18 +77,18 @@ test("error to enqueue", async ({ expect }) => {
   expect(array[0]?.error).toBeDefined();
 });
 
-test("error to error", async ({ expect, }) => {
+test("error to error", async ({ expect }) => {
   type Value = {
-    value: number;
-    error?: undefined;
+    value: number
+    error?: undefined
   } | {
-    error: unknown;
+    error: unknown
   };
   const { readable, writable } = new ParseStream<Value>({
     parse: JSON.parse,
     errorFallback: (_e, { error }) => {
-      error(new Error("sample-error", {cause: [_e]}));
-    }
+      error(new Error("sample-error", { cause: [_e] }));
+    },
   });
   const writer = writable.getWriter();
   async function call() {

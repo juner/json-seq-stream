@@ -39,7 +39,7 @@ test("enqueue fallbackSkip", async ({ expect }) => {
     begin: BEGIN,
     end: END,
     chunkEndSplit: false,
-    fallbackSkip: (_1,_2,next) => next === "begin" || next === "record",
+    fallbackSkip: (_1, _2, next) => next === "begin" || next === "record",
   });
   (async () => {
     const writer = writable.getWriter();
@@ -50,7 +50,6 @@ test("enqueue fallbackSkip", async ({ expect }) => {
   const array = await Array.fromAsync(readable);
   expect(array).toHaveLength(5);
 });
-
 
 test("enqueue chunkEndSplit:false", async ({ expect }) => {
   const BEGIN = "<<";

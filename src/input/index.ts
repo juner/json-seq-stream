@@ -1,30 +1,30 @@
-//#region split
+// #region split
 export * from "./TextSplitStream.js";
-//#endregion
+// #endregion
 
-//#region application/json-seq
+// #region application/json-seq
 export * from "./InputJsonSequenceStream.js";
-//#endregion
+// #endregion
 
-//#region Json <-> Sequence
+// #region Json <-> Sequence
 export * from "./InputJsonSequenceParseStream.js";
-//#endregion
+// #endregion
 
-//#region RS / LF record
+// #region RS / LF record
 export * from "./InputRecordSequenceStream.js";
-//#endregion
+// #endregion
 
-//#region JsonLines
+// #region JsonLines
 export * from "./InputJsonLinesStream.js";
-//#endregion
+// #endregion
 
-//#region LF (or CRLF) split
+// #region LF (or CRLF) split
 export * from "./InputLineFeedSeparattedSequenceStream.js";
-//#endregion
+// #endregion
 
-//#region record -> sequence
+// #region record -> sequence
 export * from "./RecordToSequenceStream.js";
-//#endregion
+// #endregion
 
 // #region text -> object
 export * from "./ParseStream.js";

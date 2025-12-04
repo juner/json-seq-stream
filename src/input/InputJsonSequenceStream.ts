@@ -1,6 +1,6 @@
 import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream.js";
 import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream.js";
-import { InputRecordSequenceStream, } from "./InputRecordSequenceStream.js";
+import { InputRecordSequenceStream } from "./InputRecordSequenceStream.js";
 import type { InputRecordSequenceStreamOptions } from "./InputRecordSequenceStream.js";
 
 export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputRecordSequenceStreamOptions;
@@ -51,7 +51,7 @@ export class InputJsonSequenceStream<T> implements ReadableWritablePair<T, Buffe
   constructor(options: InputJsonSequenceStreamOptions<T> = {}) {
     ({
       readable: this.#readable,
-      writable: this.#writable
+      writable: this.#writable,
     } = makeInternalJsonSequenceStream(options));
   }
 }

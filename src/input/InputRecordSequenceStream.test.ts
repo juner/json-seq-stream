@@ -2,15 +2,15 @@ import { test } from "vitest";
 import { InputRecordSequenceStream } from "./index.js";
 import { LF, RS } from "../rfc7464.js";
 
-test("empty", async ({expect}) => {
-  const {readable, writable} = new InputRecordSequenceStream();
+test("empty", async ({ expect }) => {
+  const { readable, writable } = new InputRecordSequenceStream();
   await writable.close();
   const array = await Array.fromAsync(readable.values());
   expect(array).toHaveLength(0);
 });
 
-test("enqueue", async ({expect}) => {
-  const {readable, writable} = new InputRecordSequenceStream();
+test("enqueue", async ({ expect }) => {
+  const { readable, writable } = new InputRecordSequenceStream();
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push((async () => {

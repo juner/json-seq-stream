@@ -10,7 +10,6 @@ export type OutputTextJoinLineFeedSequenceStreamOptions = Partial<TextJoinStream
 
 export class OutputTextJoinLineFeedSequenceStream extends TextJoinStream {
   constructor(options?: OutputTextJoinLineFeedSequenceStreamOptions) {
-
     let { delimiter, start: startSplit, end: endSplit, skip } = options ?? {};
     delimiter ??= LF;
     startSplit ??= false;

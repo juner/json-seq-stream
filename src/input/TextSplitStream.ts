@@ -2,10 +2,10 @@ import type { TransformStreamConstructor } from "../types/index.js";
 
 export type TextSplitStreamOptions = {
   /** separator character */
-  splitter: string | string[];
+  splitter: string | string[]
   /** chunk end split force */
-  chunkEndSplit: boolean;
-}
+  chunkEndSplit: boolean
+};
 
 function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
@@ -16,9 +16,8 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
     {
       transform(chunk, controller) {
         if (!chunkEndSplit)
-          chunk = [...sequence.splice(0, sequence.length),chunk].join("");
+          chunk = [...sequence.splice(0, sequence.length), chunk].join("");
         for (const c of chunk.split(separator)) {
-
           // skip empty string
           if (c.length <= 0) continue;
 
@@ -36,11 +35,11 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
       },
       flush(controller: TransformStreamDefaultController<string>) {
         enqueue(sequence, controller);
-      }
-    }
+      },
+    },
   ];
   return {
-    args
+    args,
   };
 }
 

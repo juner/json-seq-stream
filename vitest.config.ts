@@ -8,7 +8,7 @@ export default defineConfig({
       exclude: [
         ...coverageConfigDefaults.exclude,
         "utils/**/*.ts",
-      ]
-    }
-  }
+      ],
+    },
+  },
 });
