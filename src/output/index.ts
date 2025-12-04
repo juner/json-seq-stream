@@ -1,30 +1,30 @@
-//#region join
+// #region join
 export * from "./TextJoinStream.js";
-//#endregion
+// #endregion
 
-//#region application/json-seq
+// #region application/json-seq
 export * from "./OutputJsonSequenceStream.js";
-//#endregion
+// #endregion
 
-//#region Json -> Sequence
+// #region Json -> Sequence
 export * from "./OutputJsonSequenceStringifyStream.js";
-//#endregion
+// #endregion
 
-//#region RS / LF record
+// #region RS / LF record
 export * from "./OutputRecordSequenceStream.js";
-//#endregion
+// #endregion
 
-//#region JsonLines
+// #region JsonLines
 export * from "./OutputJsonLinesStream.js";
-//#endregion
+// #endregion
 
-//#region LF (or CRLF) join
+// #region LF (or CRLF) join
 export * from "./OutputTextJoinLineFeedSequenceStream.js";
-//#endregion
+// #endregion
 
-//#region sequence -> record
+// #region sequence -> record
 export * from "./SequenceToRecordStream.js";
-//#endregion
+// #endregion
 
 // #region object -> text
 export * from "./StringifyStream.js";

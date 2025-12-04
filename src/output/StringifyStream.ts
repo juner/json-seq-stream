@@ -2,7 +2,7 @@ import type { TransformStreamConstructor } from "../types/TransformStreamConstru
 
 export type StringifyStreamOptions<T> = {
   /** A function that converts a `T` value to a string. */
-  stringify: (value: T) => (string | undefined),
+  stringify: (value: T) => (string | undefined)
   /**
    * A function that handles errors during stringification. It receives the error,
    * the original value, and helper methods (`enqueue`, `error`) to control the stream behavior.
@@ -10,12 +10,11 @@ export type StringifyStreamOptions<T> = {
    */
   errorFallback: false | ((
     error: unknown, args: {
-      error: (reason: unknown) => void,
-      chunk: T,
+      error: (reason: unknown) => void
+      chunk: T
       enqueue: (arg: string) => void
-    }) => (void | Promise<void>));
+    }) => (void | Promise<void>))
 };
-
 
 function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyStreamOptions<T>): {
   args: ConstructorParameters<TransformStreamConstructor<T, string>>
@@ -26,7 +25,8 @@ function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyS
         try {
           const result = stringify(chunk);
           if ((result?.length ?? 0) > 0) controller.enqueue(result);
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
           if (!errorFallback) return;
           const error = controller.error.bind(controller);
           const enqueue = controller.enqueue.bind(controller);
@@ -34,8 +34,8 @@ function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyS
           if (reuslt?.then)
             return reuslt.catch(() => undefined);
         }
-      }
-    }
+      },
+    },
   ];
   return { args };
 }

@@ -1,8 +1,8 @@
 import { test } from "vitest";
 import { OutputTextJoinLineFeedSequenceStream } from "../index.js";
 
-test("enqueue", async ({expect})=> {
-  const {readable, writable} = new OutputTextJoinLineFeedSequenceStream();
+test("enqueue", async ({ expect }) => {
+  const { readable, writable } = new OutputTextJoinLineFeedSequenceStream();
   const response = new Response(readable.pipeThrough(new TextEncoderStream()));
   (async () => {
     const writer = writable.getWriter();

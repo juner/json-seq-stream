@@ -52,7 +52,7 @@ export class OutputJsonSequenceStream<T> implements ReadableWritablePair<BufferS
   constructor(options: OutputJsonSequenceStreamOptions<T> = {}) {
     ({
       readable: this.#readable,
-      writable: this.#writable
+      writable: this.#writable,
     } = makeInternalOutputJsonSequenceStream(options));
   }
 }

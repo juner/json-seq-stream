@@ -2,14 +2,14 @@ import type { TransformStreamConstructor } from "../types/TransformStreamConstru
 
 export type TextJoinStreamOptions = {
   /** delimiter character */
-  delimiter: string;
+  delimiter: string
   /** insert a delimiter at the start */
-  start: boolean;
+  start: boolean
   /** insert a delimiter at the end */
-  end: boolean;
+  end: boolean
   /** skip empty string chunks */
-  skip: boolean;
-}
+  skip: boolean
+};
 
 function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSplit, skip: skipEmpty }: TextJoinStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
@@ -23,7 +23,8 @@ function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSpli
           if (startSplit)
             controller.enqueue(delimiter);
           firstChunk = false;
-        } else {
+        }
+        else {
           controller.enqueue(delimiter);
         }
         controller.enqueue(chunk);
@@ -32,11 +33,11 @@ function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSpli
         if (firstChunk) return;
         if (!endSplit) return;
         controller.enqueue(delimiter);
-      }
-    }
+      },
+    },
   ];
   return {
-    args
+    args,
   };
 }
 

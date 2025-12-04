@@ -5,7 +5,6 @@ import type { OutputTextJoinLineFeedSequenceStreamOptions } from "./OutputTextJo
 
 export type OutputJsonLinesStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputTextJoinLineFeedSequenceStreamOptions;
 
-
 function makeInternalOutputJsonLinesStream<T>(options: OutputJsonLinesStreamOptions<T>) {
   const { delimiter, skip, start, end, stringify, errorFallback } = options;
   const encoder = new TextEncoderStream();
@@ -56,7 +55,7 @@ export class OutputJsonLinesStream<T> implements ReadableWritablePair<BufferSour
   constructor(options: OutputJsonLinesStreamOptions<T> = {}) {
     ({
       readable: this.#readable,
-      writable: this.#writable
+      writable: this.#writable,
     } = makeInternalOutputJsonLinesStream(options));
   }
 }

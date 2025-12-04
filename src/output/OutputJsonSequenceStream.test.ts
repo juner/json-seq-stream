@@ -3,7 +3,7 @@ import { OutputJsonSequenceStream } from "../index.js";
 
 test("empty", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const { response, writable } = make<Value>();
   await writable.close();
@@ -13,7 +13,7 @@ test("empty", async ({ expect }) => {
 
 test("enqueue", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const { writable, response } = make<Value>();
   (async () => {

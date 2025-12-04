@@ -3,7 +3,7 @@ import { InputJsonSequenceStream } from "./index.js";
 
 test("empty", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const { readable, writable } = new InputJsonSequenceStream<Value>();
   await writable.close();
@@ -13,7 +13,7 @@ test("empty", async ({ expect }) => {
 
 test("enqueue", async ({ expect }) => {
   type Value = {
-    value: number;
+    value: number
   };
   const sequenceStream = new InputJsonSequenceStream<Value>();
   const blob = new Blob([`\u001e{"value":30}\n\u001e{"value":3}`]);

@@ -3,7 +3,7 @@ import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequencePar
 import { InputLineFeedSeparattedSequenceStream } from "./InputLineFeedSeparattedSequenceStream.js";
 import type { InputLineFeedSeparattedSequenceStreamOptions } from "./InputLineFeedSeparattedSequenceStream.js";
 
-export type InputJsonLinesStreamOptions<T> = { label?: string } & TextDecoderOptions & InputLineFeedSeparattedSequenceStreamOptions & InputJsonSequenceParseStreamOptions<T>
+export type InputJsonLinesStreamOptions<T> = { label?: string } & TextDecoderOptions & InputLineFeedSeparattedSequenceStreamOptions & InputJsonSequenceParseStreamOptions<T>;
 
 function makeInternalJsonLinesStream<T>(options?: InputJsonLinesStreamOptions<T>) {
   const { label, fatal, splitter, chunkEndSplit, parse, errorFallback } = options ?? {};
@@ -52,7 +52,7 @@ export class InputJsonLinesStream<T> implements ReadableWritablePair<T, BufferSo
   constructor(options?: InputJsonLinesStreamOptions<T>) {
     ({
       readable: this.#readable,
-      writable: this.#writable
+      writable: this.#writable,
     } = makeInternalJsonLinesStream(options));
   }
 }

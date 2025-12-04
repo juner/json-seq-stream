@@ -1,9 +1,8 @@
-
 import type { TransformStreamConstructor } from "../types/index.js";
 
 export type ParseStreamOptions<T> = {
   /** A function that converts a string to type `T`. */
-  parse: (text: string) => (T | undefined),
+  parse: (text: string) => (T | undefined)
   /**
    * A function that handles parse errors. It receives the error,
    * the original chunk, and helper methods (`enqueue`, `error`) to control the stream behavior.
@@ -11,12 +10,11 @@ export type ParseStreamOptions<T> = {
    */
   errorFallback: false | ((
     error: unknown, args: {
-      error: (reason: unknown) => void,
-      chunk: string,
+      error: (reason: unknown) => void
+      chunk: string
       enqueue: (arg: T) => void
-    }) => (void | Promise<void>));
+    }) => (void | Promise<void>))
 };
-
 
 function makeInternalParseStream<T>({ parse, errorFallback }: ParseStreamOptions<T>): {
   args: ConstructorParameters<TransformStreamConstructor<string, T>>
@@ -27,7 +25,8 @@ function makeInternalParseStream<T>({ parse, errorFallback }: ParseStreamOptions
         try {
           const result = parse(chunk);
           if (result) controller.enqueue(result);
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
           if (!errorFallback) return;
           const error = controller.error.bind(controller);
           const enqueue = controller.enqueue.bind(controller);
@@ -35,8 +34,8 @@ function makeInternalParseStream<T>({ parse, errorFallback }: ParseStreamOptions
           if (reuslt?.then)
             return reuslt.catch(() => undefined);
         }
-      }
-    }
+      },
+    },
   ];
   return { args };
 }

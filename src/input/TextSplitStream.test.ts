@@ -14,7 +14,7 @@ test("empty", async ({ expect }) => {
 test("enqueue", async ({ expect }) => {
   const splitter = "改行";
   const chunkEndSplit = true;
-  const {readable, writable } = new TextSplitStream({
+  const { readable, writable } = new TextSplitStream({
     splitter,
     chunkEndSplit,
   });

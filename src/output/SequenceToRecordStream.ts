@@ -2,11 +2,11 @@ import type { TransformStreamConstructor } from "../types/TransformStreamConstru
 
 export type SequenceToRecordStreamOptions = {
   /** record begin character */
-  begin: string;
+  begin: string
   /** record end character */
-  end: string;
+  end: string
   /** empty chunk skip enable */
-  skip: boolean;
+  skip: boolean
 };
 
 function makeInternalSequenceToRecordStream({ begin: recordBegin, end: recordEnd, skip: emptySkip }: SequenceToRecordStreamOptions): {
@@ -20,7 +20,7 @@ function makeInternalSequenceToRecordStream({ begin: recordBegin, end: recordEnd
         controller.enqueue(chunk);
         controller.enqueue(recordEnd);
       },
-    }
+    },
   ];
   return {
     args,

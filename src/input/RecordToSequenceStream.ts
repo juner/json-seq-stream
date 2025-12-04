@@ -8,13 +8,13 @@ const modes = {
   flush: "flush",
 } as const;
 
-type Mode = typeof modes[keyof typeof modes]
+type Mode = typeof modes[keyof typeof modes];
 
 export type RecordToSequenceStreamOptions = {
-  begin: string;
-  end: string;
-  chunkEndSplit: boolean;
-  fallbackSkip: true | false | ((minChunk: string, mode: Mode, next: Mode) => boolean);
+  begin: string
+  end: string
+  chunkEndSplit: boolean
+  fallbackSkip: true | false | ((minChunk: string, mode: Mode, next: Mode) => boolean)
 };
 
 function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip }: RecordToSequenceStreamOptions): {
@@ -22,9 +22,11 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
 } {
   const sequence: string[] = [];
   const separater = new RegExp(`(${RegExp.escape(recordBegin)}|${RegExp.escape(recordEnd)})`, "u");
-  const fallback = fallbackSkip === true ? (() => true)
-    : fallbackSkip === false ? (() => false)
-    : fallbackSkip;
+  const fallback = fallbackSkip === true
+    ? () => true
+    : fallbackSkip === false
+      ? () => false
+      : fallbackSkip;
   let mode: Mode = modes.init;
   const args: ConstructorParameters<TransformStreamConstructor<string, string>> = [
     {
@@ -37,7 +39,8 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
             if (mode === modes.end || mode === undefined) {
               enqueue(sequence, controller);
               mode = next;
-            } else if (!fallback(c, mode, next)){
+            }
+            else if (!fallback(c, mode, next)) {
               enqueue(sequence, controller);
               mode = next;
             }
@@ -48,7 +51,8 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
             if (mode === modes.record || mode === modes.begin) {
               enqueue(sequence, controller);
               mode = next;
-            } else if (!fallback(c, mode, next)) {
+            }
+            else if (!fallback(c, mode, next)) {
               enqueue(sequence, controller);
               mode = next;
             }
@@ -58,7 +62,8 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
           if (mode === modes.begin || mode === modes.record) {
             sequence.push(c);
             mode = next;
-          } else if (!fallback(c, mode, modes.record)) {
+          }
+          else if (!fallback(c, mode, modes.record)) {
             sequence.push(c);
             mode = next;
           }
@@ -71,13 +76,12 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
         if (!fallback("", mode, modes.flush)) {
           enqueue(sequence, controller);
         }
-      }
-    }
+      },
+    },
   ];
   return {
     args,
   };
-
 }
 
 function enqueue(sequence: string[], controller: TransformStreamDefaultController<string>) {

@@ -2,7 +2,6 @@ import { RecordToSequenceStream } from "./RecordToSequenceStream.js";
 import type { RecordToSequenceStreamOptions } from "./RecordToSequenceStream.js";
 import { LF, RS } from "../rfc7464.js";
 
-
 export type InputRecordSequenceStreamOptions = Partial<RecordToSequenceStreamOptions>;
 
 const LINE_BEGIN = RS;
@@ -13,12 +12,12 @@ const LINE_END = LF;
  */
 export class InputRecordSequenceStream extends RecordToSequenceStream {
   constructor(options?: InputRecordSequenceStreamOptions) {
-    let {begin, end, chunkEndSplit, fallbackSkip } = options ?? {};
+    let { begin, end, chunkEndSplit, fallbackSkip } = options ?? {};
     begin ??= LINE_BEGIN;
     end ??= LINE_END;
     chunkEndSplit ??= false;
     fallbackSkip ??= false;
-    super({begin, end, chunkEndSplit, fallbackSkip});
+    super({ begin, end, chunkEndSplit, fallbackSkip });
   }
 }
 

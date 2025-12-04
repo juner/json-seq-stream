@@ -8,10 +8,10 @@ export type InputJsonSequenceParseStreamOptions<T> = Partial<ParseStreamOptions<
  */
 export class InputJsonSequenceParseStream<T> extends ParseStream<T> {
   constructor(options?: InputJsonSequenceParseStreamOptions<T>) {
-    let {errorFallback, parse} = options ?? {};
+    let { errorFallback, parse } = options ?? {};
     parse ??= JSON.parse;
     errorFallback ??= false;
-    super({parse, errorFallback});
+    super({ parse, errorFallback });
   }
 }
 
