@@ -1,9 +1,37 @@
 # CHANGELOG
 
+## v1.0.10
+
+- [npm:json-seq-stream@1.0.10](https://www.npmjs.com/package/json-seq-stream/v/1.0.10)
+- [github:juner/json-seq/stream/release/tag/v1.0.10](https://github.com/juner/json-seq-stream/releases/tag/v1.0.10)
+
+- release
+  - 2026/03/10
+
+- refactor
+  - reorganize TypeScript types and project structure
+    - split sources into `input/` and `output/` directories
+  - remove `cpx` and replace with `fs-extra`
+    - add internal utilities `copy.ts` and `remove.ts`
+
+- dev
+  - improve ESLint configuration
+  - fix lint rules not being properly applied
+  - add `.editorconfig`
+  - enable `verbatimModuleSyntax`
+
+- build
+  - adjust npm publish workflow
+  - refine files included in npm package
+
+- misc
+  - update `engines` version
+
+
 ## v1.0.9
 
 - [npm:json-seq-stream@1.0.9](https://www.npmjs.com/package/json-seq-stream/v/1.0.9)
-- [github:juner/json-seq/stream/release/tag/v1.0.9](https://github.com/juner/json-seq-stream/releases/tag/v1.0.9)
+- [github:juner/json-seq-stream/stream/release/tag/v1.0.9](https://github.com/juner/json-seq-stream/releases/tag/v1.0.9)
 
 - release
   - 2025/11/13
