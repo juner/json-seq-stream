@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v1.0.11
+
+- [npm:json-seq-stream@1.0.11](https://www.npmjs.com/package/json-seq-stream/v/1.0.11)
+- [github:juner/json-seq-stream/releases/tag/v1.0.11](https://github.com/juner/json-seq-stream/releases/tag/v1.0.11)
+
+- release
+  - 2026/11/16
+
+- fix
+  - unify package exports to ESM to resolve `FalseESM` type resolution issue
+  - rename `TransformStreamConstructor.d.ts` to `.ts` so its declaration is emitted to `dist/types/`
+
+- dev
+  - update ESLint configuration to use recommended configs for plugins
+
+- build
+  - emit ES module format only in Vite build
+  - add `.npmrc` with `engine-strict=true`
+
+
 ## v1.0.10
 
 - [npm:json-seq-stream@1.0.10](https://www.npmjs.com/package/json-seq-stream/v/1.0.10)
