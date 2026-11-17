@@ -2,14 +2,15 @@
 
 application/json-seq / jsonl (NDJSON) support stream / async iterator library
 
-This library provides composable `TransformStream` / `ReadableWritablePair` utilities to work with streaming JSON data formats.
+This library provides composable `TransformStream` / `ReadableWritablePair` classes and async generator utilities to work with streaming JSON data formats.
 
 ## Features
 
-- [x] Supports [RFC7464](https://datatracker.ietf.org/doc/html/rfc7464) (application/json-seq)
-- [x] Supports JSON Lines / NDJSON (application/jsonl, application/x-ndjson)
-- [x] Fully stream-compatible (Fetch API, File API, Bun/Deno, etc.)
-- [x] Composable with standard Web Streams (`pipeThrough()`)
+- [x] Supports [RFC 7464](https://datatracker.ietf.org/doc/html/rfc7464) (`application/json-seq`), including multi-line JSON and truncated record recovery
+- [x] Supports JSON Lines / NDJSON (`application/jsonl`, `application/x-ndjson`)
+- [x] Fully stream-compatible (Fetch API, File API, Node.js, Bun, Deno, etc.)
+- [x] Composable with standard Web Streams (`pipeThrough()`) and `AsyncIterable` / `for await...of`
+- [x] Supports async `parse` / `stringify` functions and maximum buffer length (`maxLength`) protection
 
 ---
 
@@ -32,7 +33,7 @@ for await (const value of readable) {
 }
 ```
 
-## JSON Lines / NDJSON
+### JSON Lines / NDJSON
 
 ```ts
 import { InputJsonLinesStream } from "json-seq-stream";
@@ -49,7 +50,7 @@ for await (const value of readable) {
 }
 ```
 
-## Output Example
+### Output Stream Example
 
 ```ts
 import { OutputJsonLinesStream } from "json-seq-stream";
@@ -59,12 +60,39 @@ type Value = { value: number };
 const { readable, writable } = new OutputJsonLinesStream<Value>();
 
 const writer = writable.getWriter();
-writer.write({ value: 1 });
-writer.write({ value: 2 });
-writer.close();
+void writer.write({ value: 1 });
+void writer.write({ value: 2 });
+void writer.close();
 
 for await (const chunk of readable) {
   console.log(new TextDecoder().decode(chunk)); // NDJSON text lines
+}
+```
+
+### Async Generator Helpers (`AsyncIterable` / `Iterable`)
+
+```ts
+import {
+  parseJsonLines,
+  parseJsonSequence,
+  stringifyJsonLines,
+  stringifyJsonSequence,
+} from "json-seq-stream";
+
+type Value = { value: number };
+
+const items: Value[] = [{ value: 1 }, { value: 2 }];
+
+// JSON Lines (NDJSON) round-trip with AsyncIterable
+const jsonlBytes = stringifyJsonLines(items);
+for await (const item of parseJsonLines<Value>(jsonlBytes)) {
+  console.log(item);
+}
+
+// JSON Text Sequences (RFC 7464) round-trip with AsyncIterable
+const jsonSeqBytes = stringifyJsonSequence(items);
+for await (const item of parseJsonSequence<Value>(jsonSeqBytes)) {
+  console.log(item);
 }
 ```
 
