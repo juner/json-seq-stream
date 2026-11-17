@@ -56,3 +56,22 @@ export class OutputJsonSequenceStream<T> implements ReadableWritablePair<BufferS
     } = makeInternalOutputJsonSequenceStream(options));
   }
 }
+
+/**
+ * Serializes an `AsyncIterable` or `Iterable` of typed values (`T`) into `application/json-seq` binary chunks.
+ */
+export async function* stringifyJsonSequence<T>(
+  source: AsyncIterable<T> | Iterable<T>,
+  options?: OutputJsonSequenceStreamOptions<T>,
+): AsyncGenerator<BufferSource, void, undefined> {
+  const stream = new OutputJsonSequenceStream<T>(options);
+  const writer = stream.writable.getWriter();
+  const writePromise = (async () => {
+    for await (const item of source) {
+      await writer.write(item);
+    }
+    await writer.close();
+  })();
+  yield* stream.readable;
+  await writePromise;
+}

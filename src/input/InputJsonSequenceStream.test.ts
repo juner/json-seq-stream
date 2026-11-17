@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { InputJsonSequenceStream } from "./index.js";
+import { InputJsonSequenceStream, parseJsonSequence } from "./index.js";
 
 test("empty", async ({ expect }) => {
   type Value = {
@@ -65,4 +65,16 @@ test("pretty-printed multi-line JSON and truncated record recovery", async ({ ex
     { id: 1, tags: ["a", "b"] },
     { id: 2 },
   ]);
+});
+
+test("parseJsonSequence helper with string and binary chunks", async ({ expect }) => {
+  type Value = { id: number };
+  const encoder = new TextEncoder();
+  async function* generate() {
+    await Promise.resolve();
+    yield `\u001e{"id":1}\n`;
+    yield encoder.encode(`\u001e{"id":2}\n`);
+  }
+  const array = await Array.fromAsync(parseJsonSequence<Value>(generate()));
+  expect(array).toEqual([{ id: 1 }, { id: 2 }]);
 });
