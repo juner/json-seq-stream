@@ -59,3 +59,22 @@ export class OutputJsonLinesStream<T> implements ReadableWritablePair<BufferSour
     } = makeInternalOutputJsonLinesStream(options));
   }
 }
+
+/**
+ * Serializes an `AsyncIterable` or `Iterable` of typed values (`T`) into NDJSON / JSON Lines binary chunks.
+ */
+export async function* stringifyJsonLines<T>(
+  source: AsyncIterable<T> | Iterable<T>,
+  options?: OutputJsonLinesStreamOptions<T>,
+): AsyncGenerator<BufferSource, void, undefined> {
+  const stream = new OutputJsonLinesStream<T>(options);
+  const writer = stream.writable.getWriter();
+  const writePromise = (async () => {
+    for await (const item of source) {
+      await writer.write(item);
+    }
+    await writer.close();
+  })();
+  yield* stream.readable;
+  await writePromise;
+}

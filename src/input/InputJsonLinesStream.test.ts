@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { InputJsonLinesStream } from "./index.js";
+import { InputJsonLinesStream, parseJsonLines } from "./index.js";
 
 test("empty", async ({ expect }) => {
   const { writable, readable } = new InputJsonLinesStream();
@@ -21,4 +21,15 @@ test("enqueue with CRLF split across chunks and options", async ({ expect }) => 
   await writer.close();
   const array = await arrayWait;
   expect(array).toEqual([{ a: 1 }, 0, false, null, ""]);
+});
+
+test("parseJsonLines helper with string and binary chunks", async ({ expect }) => {
+  type Value = { a: number };
+  const encoder = new TextEncoder();
+  const chunks: (string | BufferSource)[] = [
+    `{"a":1}\n`,
+    encoder.encode(`{"a":2}\n`),
+  ];
+  const array = await Array.fromAsync(parseJsonLines<Value>(chunks));
+  expect(array).toEqual([{ a: 1 }, { a: 2 }]);
 });
