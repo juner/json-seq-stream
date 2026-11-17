@@ -27,6 +27,32 @@ function getTrailingPrefixLength(text: string, target: string): number {
   return 0;
 }
 
+function isJsonBalanced(text: string): boolean {
+  const trimmed = text.trimStart();
+  if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) return true;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (const ch of trimmed) {
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (ch === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (ch === "\"") {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+    if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") depth--;
+  }
+  return depth <= 0;
+}
+
 function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip }: RecordToSequenceStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
@@ -63,11 +89,19 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
               enqueue(sequence, controller);
               mode = next;
             }
+            else {
+              sequence.splice(0, sequence.length);
+              mode = next;
+            }
             continue;
           }
           if (c === recordEnd) {
             const next = modes.end;
             if (mode === modes.record || mode === modes.begin) {
+              if (!isJsonBalanced(sequence.join(""))) {
+                sequence.push(c);
+                continue;
+              }
               enqueue(sequence, controller);
               mode = next;
             }

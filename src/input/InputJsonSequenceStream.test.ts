@@ -48,3 +48,21 @@ test("options forwarding", async ({ expect }) => {
   const array = await arrayWait;
   expect(array).toEqual([0, 1]);
 });
+
+test("pretty-printed multi-line JSON and truncated record recovery", async ({ expect }) => {
+  type Value = { id: number, tags?: string[] };
+  const stream = new InputJsonSequenceStream<Value>();
+  const writer = stream.writable.getWriter();
+  const encoder = new TextEncoder();
+  const arrayWait = Array.fromAsync(stream.readable.values());
+
+  await writer.write(encoder.encode(`\u001e{\n  "id": 1,\n  "tags": [\n    "a",\n    "b"\n  ]\n}\n`));
+  await writer.write(encoder.encode(`\u001e{\n  "id": "truncated"\n\u001e   \n\u001e{"id": 2}\n`));
+  await writer.close();
+
+  const array = await arrayWait;
+  expect(array).toEqual([
+    { id: 1, tags: ["a", "b"] },
+    { id: 2 },
+  ]);
+});

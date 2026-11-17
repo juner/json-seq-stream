@@ -115,12 +115,33 @@ test("multi-char begin/end split across chunks with fallbackSkip:true", async ({
     const writer = writable.getWriter();
     await writer.write("garbage<");
     await writer.write("<123>");
-    await writer.write("><<45<<6>><");
+    await writer.write("><<unclosed<<456>><");
     await writer.write("<789>><");
     await writer.close();
   })();
   const array = await Array.fromAsync(readable);
   expect(array).toEqual(["123", "456", "789"]);
+});
+
+test("multi-line JSON and truncated JSON recovery", async ({ expect }) => {
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "\u001e",
+    end: "\n",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write(`\u001e{\n  "text": "a \\" { b",\n  "list": [\n    1,\n    2\n  ]\n}\n`);
+    await writer.write(`\u001e{\n  "truncated": true\n\u001e[\n  3\n]\n`);
+    await writer.close();
+  })();
+  const array = await Array.fromAsync(readable);
+  expect(array).toEqual([
+    `{\n  "text": "a \\" { b",\n  "list": [\n    1,\n    2\n  ]\n}`,
+    `{\n  "truncated": true\n`,
+    `[\n  3\n]`,
+  ]);
 });
 
 test("trailing partial begin flushed when fallbackSkip:false", async ({ expect }) => {
