@@ -84,6 +84,11 @@ export async function* parseJsonSequence<T>(
  * @see InputJsonSequenceStream
  */
 export const JsonSequenceStream = InputJsonSequenceStream;
+/**
+ * @deprecated rename to InputJsonSequenceStream
+ * @see InputJsonSequenceStream
+ */
+export type JsonSequenceStream<T> = InputJsonSequenceStream<T>;
 
 /**
  * @deprecated rename to InputJsonSequenceStreamOptions

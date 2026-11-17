@@ -33,5 +33,10 @@ export type JsonSequenceFormatStreamOptions<T> = InputJsonSequenceParseStreamOpt
  * @see InputJsonSequenceParseStream
  */
 export const JsonSequenceFormatStream = InputJsonSequenceParseStream;
+/**
+ * @deprecated rename to InputJsonSequenceFormatStream
+ * @see InputJsonSequenceParseStream
+ */
+export type JsonSequenceFormatStream<T> = InputJsonSequenceParseStream<T>;
 
 // #endregion

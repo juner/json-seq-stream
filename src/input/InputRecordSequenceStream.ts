@@ -36,6 +36,11 @@ export type SequenceStreamOptions = InputRecordSequenceStreamOptions;
  * @see InputRecordSequenceStream
  */
 export const SequenceStream = InputRecordSequenceStream;
+/**
+ * @deprecated rename to InputSequenceStream
+ * @see InputRecordSequenceStream
+ */
+export type SequenceStream = InputRecordSequenceStream;
 
 /**
  * @deprecated rename to InputRecordSequenceStreamOptions
@@ -48,4 +53,9 @@ export type InputSequenceStreamOptions = InputRecordSequenceStreamOptions;
  * @see InputRecordSequenceStream
  */
 export const InputSequenceStream = InputRecordSequenceStream;
+/**
+ * @deprecated rename to InputRecordSequenceStream
+ * @see InputRecordSequenceStream
+ */
+export type InputSequenceStream = InputRecordSequenceStream;
 // #endregion

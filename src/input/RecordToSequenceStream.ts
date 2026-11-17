@@ -64,7 +64,7 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
     .sort((a, b) => b.length - a.length)
     .map(s => RegExp.escape(s))
     .join("|");
-  const separater = new RegExp(`(${parts})`, "u");
+  const separator = new RegExp(`(${parts})`, "u");
   const fallback = fallbackSkip === true
     ? () => true
     : fallbackSkip === false
@@ -78,7 +78,7 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
           chunk = [...sequence.splice(0, sequence.length), carry, chunk].join("");
           carry = "";
         }
-        const tokens = chunk.split(separater);
+        const tokens = chunk.split(separator);
         for (let i = 0; i < tokens.length; i++) {
           let c = tokens[i];
           if (c === recordBegin) {

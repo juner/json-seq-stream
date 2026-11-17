@@ -29,3 +29,7 @@ export type InputLineFeedSeparattedSequenceStreamOptions = InputLineFeedSeparate
  * @deprecated Use {@link InputLineFeedSeparatedSequenceStream} instead.
  */
 export const InputLineFeedSeparattedSequenceStream = InputLineFeedSeparatedSequenceStream;
+/**
+ * @deprecated Use {@link InputLineFeedSeparatedSequenceStream} instead.
+ */
+export type InputLineFeedSeparattedSequenceStream = InputLineFeedSeparatedSequenceStream;

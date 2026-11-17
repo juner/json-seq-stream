@@ -52,13 +52,13 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit, maxLength }: Tex
 
 /**
  * string[] or string -> RegExp
- * @param separater
+ * @param separator
  * @returns
  */
-function makeSeparator(separater: string[] | string) {
-  if (typeof separater === "string")
-    separater = [separater];
-  const parts = [...separater]
+function makeSeparator(separator: string[] | string) {
+  if (typeof separator === "string")
+    separator = [separator];
+  const parts = [...separator]
     .sort((a, b) => b.length - a.length)
     .map(s => RegExp.escape(s))
     .join("|");
