@@ -50,6 +50,24 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveProperty("1", `{"value":5}`);
 });
 
+test("async stringify", async ({ expect }) => {
+  type Value = { value: number };
+  const { readable, writable } = new StringifyStream<Value>({
+    stringify: async (v) => {
+      await Promise.resolve();
+      return JSON.stringify(v);
+    },
+    errorFallback: false,
+  });
+  const writer = writable.getWriter();
+  const arrayWait = Array.fromAsync(readable.values());
+  await writer.write({ value: 1 });
+  await writer.write({ value: 2 });
+  await writer.close();
+  const array = await arrayWait;
+  expect(array).toEqual([`{"value":1}`, `{"value":2}`]);
+});
+
 test("error to skip", async ({ expect }) => {
   type Value = {
     value: unknown
