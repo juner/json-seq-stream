@@ -49,6 +49,24 @@ test("enqueue falsy values and skip undefined", async ({ expect }) => {
   expect(array).toEqual([0, false, null, ""]);
 });
 
+test("async parse", async ({ expect }) => {
+  type Value = { value: number };
+  const { readable, writable } = new ParseStream<Value>({
+    parse: async (text) => {
+      await Promise.resolve();
+      return JSON.parse(text) as Value;
+    },
+    errorFallback: false,
+  });
+  const writer = writable.getWriter();
+  const arrayWait = Array.fromAsync(readable.values());
+  await writer.write(JSON.stringify({ value: 1 }));
+  await writer.write(JSON.stringify({ value: 2 }));
+  await writer.close();
+  const array = await arrayWait;
+  expect(array).toEqual([{ value: 1 }, { value: 2 }]);
+});
+
 test("error to skip", async ({ expect }) => {
   type Value = {
     value: number
