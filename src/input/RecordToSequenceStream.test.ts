@@ -144,6 +144,25 @@ test("multi-line JSON and truncated JSON recovery", async ({ expect }) => {
   ]);
 });
 
+test("maxLength exceeded throws RangeError", async ({ expect }) => {
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "<",
+    end: ">",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+    maxLength: 5,
+  });
+  const writer = writable.getWriter();
+  async function call() {
+    const promises: Promise<unknown>[] = [];
+    promises.push(writer.write("<12345><123456>"));
+    promises.push(Array.fromAsync(readable));
+    promises.push(writer.close());
+    await Promise.all(promises);
+  }
+  await expect(call()).rejects.toThrow(RangeError);
+});
+
 test("trailing partial begin flushed when fallbackSkip:false", async ({ expect }) => {
   const { readable, writable } = new RecordToSequenceStream({
     begin: "<<",

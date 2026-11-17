@@ -15,6 +15,8 @@ export type RecordToSequenceStreamOptions = {
   end: string
   chunkEndSplit: boolean
   fallbackSkip: true | false | ((minChunk: string, mode: Mode, next: Mode) => boolean)
+  /** maximum allowed length for a single record */
+  maxLength?: number
 };
 
 function getTrailingPrefixLength(text: string, target: string): number {
@@ -53,7 +55,7 @@ function isJsonBalanced(text: string): boolean {
   return depth <= 0;
 }
 
-function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip }: RecordToSequenceStreamOptions): {
+function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip, maxLength }: RecordToSequenceStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const sequence: string[] = [];
@@ -127,6 +129,11 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
           else if (!fallback(c, mode, modes.record)) {
             sequence.push(c);
             mode = next;
+          }
+          if (maxLength !== undefined && sequence.join("").length > maxLength) {
+            sequence.splice(0, sequence.length);
+            controller.error(new RangeError(`Maximum length (${maxLength}) exceeded`));
+            return;
           }
         }
         if (!chunkEndSplit) return;

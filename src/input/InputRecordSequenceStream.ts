@@ -12,12 +12,14 @@ const LINE_END = LF;
  */
 export class InputRecordSequenceStream extends RecordToSequenceStream {
   constructor(options?: InputRecordSequenceStreamOptions) {
-    let { begin, end, chunkEndSplit, fallbackSkip } = options ?? {};
-    begin ??= LINE_BEGIN;
-    end ??= LINE_END;
-    chunkEndSplit ??= false;
-    fallbackSkip ??= false;
-    super({ begin, end, chunkEndSplit, fallbackSkip });
+    const {
+      begin = LINE_BEGIN,
+      end = LINE_END,
+      chunkEndSplit = false,
+      fallbackSkip = false,
+      maxLength,
+    } = options ?? {};
+    super({ begin, end, chunkEndSplit, fallbackSkip, maxLength });
   }
 }
 
