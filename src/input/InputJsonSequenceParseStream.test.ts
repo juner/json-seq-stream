@@ -1,4 +1,4 @@
-import { test } from "vitest";
+import { test, vi } from "vitest";
 import { InputJsonSequenceParseStream } from "./index.js";
 
 test("empty", async ({ expect }) => {
@@ -45,19 +45,48 @@ test("ignore whitespace-only chunks without error", async ({ expect }) => {
   expect(array).toEqual([{ value: 42 }]);
 });
 
-test("error to skip", async ({ expect }) => {
+test("default errorFallback skips the record and warns", async ({ expect }) => {
   type Value = {
     value: number
   };
-  const { readable, writable } = new InputJsonSequenceParseStream<Value>();
-  const writer = writable.getWriter();
-  const promises: Promise<unknown>[] = [];
-  promises.push(writer.write("{value: 10}"));
-  const arrayWait = Array.fromAsync(readable.values());
-  promises.push(arrayWait);
-  await writer.close();
-  const array = await arrayWait;
-  expect(array).toHaveLength(0);
+  const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+  try {
+    const { readable, writable } = new InputJsonSequenceParseStream<Value>();
+    const writer = writable.getWriter();
+    const promises: Promise<unknown>[] = [];
+    promises.push(writer.write("{value: 10}"));
+    const arrayWait = Array.fromAsync(readable.values());
+    promises.push(arrayWait);
+    await writer.close();
+    const array = await arrayWait;
+    expect(array).toHaveLength(0);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  }
+  finally {
+    warnSpy.mockRestore();
+  }
+});
+
+test("errorFallback: false skips the record silently", async ({ expect }) => {
+  type Value = {
+    value: number
+  };
+  const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+  try {
+    const { readable, writable } = new InputJsonSequenceParseStream<Value>({ errorFallback: false });
+    const writer = writable.getWriter();
+    const promises: Promise<unknown>[] = [];
+    promises.push(writer.write("{value: 10}"));
+    const arrayWait = Array.fromAsync(readable.values());
+    promises.push(arrayWait);
+    await writer.close();
+    const array = await arrayWait;
+    expect(array).toHaveLength(0);
+    expect(warnSpy).not.toHaveBeenCalled();
+  }
+  finally {
+    warnSpy.mockRestore();
+  }
 });
 
 test("error to enqueue", async ({ expect }) => {

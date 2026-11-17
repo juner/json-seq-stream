@@ -9,14 +9,27 @@ function defaultParse<T>(text: string): T | undefined {
 }
 
 /**
+ * Default error fallback: skips the record and warns, as required by
+ * RFC 7464 section 2.1 (parsers must not abort on malformed texts and
+ * should signal them to the application).
+ */
+function defaultErrorFallback(error: unknown, { chunk }: { chunk: string }): void {
+  console.warn("json-seq-stream: failed to parse JSON text; the record was skipped.", { chunk, error });
+}
+
+/**
  * string の sequence を 連続した `T` の sequence に変換する TransformStream
+ *
+ * By default, records that fail to parse are skipped with a `console.warn`
+ * (RFC 7464 section 2.1). Pass `errorFallback: false` to skip silently, or a
+ * custom handler to control the behavior.
  */
 export class InputJsonSequenceParseStream<T> extends ParseStream<T> {
   constructor(options?: InputJsonSequenceParseStreamOptions<T>) {
     let { errorFallback, parse } = options ?? {};
     const { writableStrategy, readableStrategy } = options ?? {};
     parse ??= defaultParse;
-    errorFallback ??= false;
+    errorFallback ??= defaultErrorFallback;
     super({ parse, errorFallback, writableStrategy, readableStrategy });
   }
 }
