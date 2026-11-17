@@ -9,6 +9,13 @@
   - 2026/11/17
 
 - new feature
+  - `parseJsonResponse<T>` / `detectJsonStreamFormat`
+    - Parse a `fetch()` `Response` by detecting the streaming JSON format from its `Content-Type` header (`application/json-seq`, `application/jsonl`, `application/x-ndjson`), with a `format` option to override detection
+  - `writableStrategy` / `readableStrategy` options
+    - Customize the queuing strategies of all `TransformStream`-based classes; composite streams forward the strategy of their typed boundary (`readableStrategy` on `Input*`, `writableStrategy` on `Output*`)
+  - `truncationFallback` option
+    - Control how an unterminated final record is handled at stream end (RFC 7464 §2.4) in `RecordToSequenceStream`, `InputRecordSequenceStream`, and `InputJsonSequenceStream`: enqueue as-is (default), drop (`false`), or decide via callback
+  - `NDJSON_MIME_TYPE` constant (`application/x-ndjson`) in `jsonlines.ts`
   - `parseJsonSequence<T>` / `stringifyJsonSequence<T>`
     - Async generator helpers for `application/json-seq` (`AsyncIterable` / `Iterable` support)
   - `parseJsonLines<T>` / `stringifyJsonLines<T>`
@@ -20,8 +27,15 @@
   - Multi-line JSON and truncated record support
     - Support pretty-printed (multi-line) JSON objects/arrays and recover from truncated records on the next `RS` in `RecordToSequenceStream` / `InputJsonSequenceStream`
 
+- breaking change
+  - Default `errorFallback` behavior changed
+    - Input (`InputJsonSequenceParseStream`, `InputJsonSequenceStream`, `InputJsonLinesStream`): records that fail to parse are skipped with a `console.warn` (RFC 7464 §2.1) instead of silently
+    - Output (`OutputJsonSequenceStringifyStream`, `OutputJsonSequenceStream`, `OutputJsonLinesStream`): values that fail to stringify now error the stream instead of being silently dropped
+    - Pass `errorFallback: false` to restore the previous silent-skip behavior
+
 - fix
   - `ParseStream<T>`: enqueue falsy parsed values (`0`, `false`, `null`, `""`) and only skip `undefined`
+  - `StringifyStream<T>`: enqueue empty-string results and only skip `undefined`
   - `InputJsonSequenceParseStream<T>`: ignore empty and whitespace-only chunks before parsing
   - `TextJoinStream`: emit trailing delimiter immediately on each chunk transform when `end: true`
   - `OutputJsonLinesStream<T>`: default `end` option to `true` for real-time line termination
@@ -42,6 +56,12 @@
 
 - refactor
   - Narrow `OutputJsonSequenceStream<T>` and `OutputJsonLinesStream<T>` readable chunk type from `BufferSource` to `Uint8Array<ArrayBuffer>`
+
+- compat
+  - Replace `RegExp.escape` (ES2025) with an internal escape helper and lower `engines.node` to `>=20` (Node.js 20 / 22 LTS support)
+
+- build
+  - Add `sideEffects: false` for bundler tree-shaking
 
 - dev
   - Achieve 100% test coverage across all statements, branches, functions, and lines

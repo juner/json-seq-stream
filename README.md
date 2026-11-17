@@ -8,9 +8,12 @@ This library provides composable `TransformStream` / `ReadableWritablePair` clas
 
 - [x] Supports [RFC 7464](https://datatracker.ietf.org/doc/html/rfc7464) (`application/json-seq`), including multi-line JSON and truncated record recovery
 - [x] Supports JSON Lines / NDJSON (`application/jsonl`, `application/x-ndjson`)
-- [x] Fully stream-compatible (Fetch API, File API, Node.js, Bun, Deno, etc.)
+- [x] Fully stream-compatible (Fetch API, File API, Node.js 20+, Bun, Deno, etc.)
 - [x] Composable with standard Web Streams (`pipeThrough()`) and `AsyncIterable` / `for await...of`
 - [x] Supports async `parse` / `stringify` functions and maximum buffer length (`maxLength`) protection
+- [x] `Content-Type` based format detection for `fetch()` responses (`parseJsonResponse`)
+- [x] Customizable backpressure via `writableStrategy` / `readableStrategy` queuing strategy options
+- [x] Truncated final record handling (`truncationFallback`, RFC 7464 §2.4)
 
 ---
 
@@ -94,6 +97,37 @@ const jsonSeqBytes = stringifyJsonSequence(items);
 for await (const item of parseJsonSequence<Value>(jsonSeqBytes)) {
   console.log(item);
 }
+```
+
+### Fetch Response with `Content-Type` Detection
+
+```ts
+import { parseJsonResponse } from "json-seq-stream";
+
+type Value = { value: number };
+
+const response = await fetch("https://example.com/data");
+// application/json-seq -> RFC 7464, application/jsonl or application/x-ndjson -> JSON Lines
+for await (const value of parseJsonResponse<Value>(response)) {
+  console.log(value);
+}
+```
+
+### Error Handling
+
+By default, input streams skip records that fail to parse and report them
+with a `console.warn` (RFC 7464 §2.1), while output streams error the stream
+when `stringify` fails. Use the `errorFallback` option to customize this:
+
+```ts
+import { InputJsonLinesStream } from "json-seq-stream";
+
+const stream = new InputJsonLinesStream<MyType>({
+  // false: skip silently / function: decide per record
+  errorFallback: (error, { chunk }) => {
+    console.error("broken line:", chunk, error);
+  },
+});
 ```
 
 ## See also
