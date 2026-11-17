@@ -34,6 +34,11 @@
     - Input (`InputJsonSequenceParseStream`, `InputJsonSequenceStream`, `InputJsonLinesStream`): records that fail to parse are skipped with a `console.warn` (RFC 7464 §2.1) instead of silently
     - Output (`OutputJsonSequenceStringifyStream`, `OutputJsonSequenceStream`, `OutputJsonLinesStream`): values that fail to stringify now error the stream instead of being silently dropped
     - Pass `errorFallback: false` to restore the previous silent-skip behavior
+  - Removed deprecated v1.x aliases (scheduled for removal in v2.0.0)
+    - `JsonSequenceFormatStream` / `JsonSequenceFormatStreamOptions` -> use `InputJsonSequenceParseStream` / `InputJsonSequenceParseStreamOptions`
+    - `JsonSequenceStream` / `JsonSequenceStreamOptions` -> use `InputJsonSequenceStream` / `InputJsonSequenceStreamOptions`
+    - `SequenceStream` / `SequenceStreamOptions` / `InputSequenceStream` / `InputSequenceStreamOptions` -> use `InputRecordSequenceStream` / `InputRecordSequenceStreamOptions`
+    - `OutputSequenceStream` / `OutputSequenceStreamOptions` -> use `OutputRecordSequenceStream` / `OutputRecordSequenceStreamOptions`
 
 - fix
   - `ParseStream<T>`: enqueue falsy parsed values (`0`, `false`, `null`, `""`) and only skip `undefined`
@@ -44,13 +49,12 @@
   - `TextSplitStream`: sort splitters by length descending for multi-character delimiters
   - `RecordToSequenceStream`: fix initial `begin` state handling and multi-character delimiters split across chunk boundaries
   - Forward `ignoreBOM`, `chunkEndSplit`, `fallbackSkip`, `maxLength`, and `skip` options in composite streams (`InputJsonSequenceStream`, `InputJsonLinesStream`, `OutputJsonSequenceStream`)
-  - Export instance type aliases for deprecated class names
 
 - rename
   - `InputLineFeedSeparattedSequenceStream` -> `InputLineFeedSeparatedSequenceStream`
   - `InputLineFeedSeparattedSequenceStreamOptions` -> `InputLineFeedSeparatedSequenceStreamOptions`
 
-- deprecated
+- deprecated (to be removed in v3.0.0)
   - `InputLineFeedSeparattedSequenceStream`
     - rename after `InputLineFeedSeparatedSequenceStream`
   - `InputLineFeedSeparattedSequenceStreamOptions`

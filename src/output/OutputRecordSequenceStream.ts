@@ -21,24 +21,3 @@ export class OutputRecordSequenceStream extends SequenceToRecordStream {
     super({ begin: recordBegin, end: recordEnd, skip, ...args });
   }
 }
-
-// #region deprecated remove v2.0.0 -
-
-/**
- * @deprecated rename to OutputRecordSequenceStreamOptions
- * @see SequenceToRecordStreamOptions
- */
-export type OutputSequenceStreamOptions = SequenceToRecordStreamOptions;
-
-/**
- * @deprecated rename to OutputRecordSequenceStream
- * @see OutputRecordSequenceStream
- */
-export const OutputSequenceStream = OutputRecordSequenceStream;
-/**
- * @deprecated rename to OutputRecordSequenceStream
- * @see OutputRecordSequenceStream
- */
-export type OutputSequenceStream = OutputRecordSequenceStream;
-
-// #endregion

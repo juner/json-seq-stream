@@ -79,24 +79,3 @@ export async function* parseJsonSequence<T>(
   yield* stream.readable;
   await writePromise;
 }
-
-// #region deprecated remove to version 2.0.0 -
-
-/**
- * @deprecated rename to InputJsonSequenceStream
- * @see InputJsonSequenceStream
- */
-export const JsonSequenceStream = InputJsonSequenceStream;
-/**
- * @deprecated rename to InputJsonSequenceStream
- * @see InputJsonSequenceStream
- */
-export type JsonSequenceStream<T> = InputJsonSequenceStream<T>;
-
-/**
- * @deprecated rename to InputJsonSequenceStreamOptions
- * @see InputJsonSequenceStreamOptions
- */
-export type JsonSequenceStreamOptions<T> = InputJsonSequenceStreamOptions<T>;
-
-// #endregion

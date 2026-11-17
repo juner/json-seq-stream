@@ -23,15 +23,15 @@ export class InputLineFeedSeparatedSequenceStream extends TextSplitStream {
 }
 
 /**
- * @deprecated Use {@link InputLineFeedSeparatedSequenceStreamOptions} instead.
+ * @deprecated Use {@link InputLineFeedSeparatedSequenceStreamOptions} instead. (to be removed in v3.0.0)
  */
 export type InputLineFeedSeparattedSequenceStreamOptions = InputLineFeedSeparatedSequenceStreamOptions;
 
 /**
- * @deprecated Use {@link InputLineFeedSeparatedSequenceStream} instead.
+ * @deprecated Use {@link InputLineFeedSeparatedSequenceStream} instead. (to be removed in v3.0.0)
  */
 export const InputLineFeedSeparattedSequenceStream = InputLineFeedSeparatedSequenceStream;
 /**
- * @deprecated Use {@link InputLineFeedSeparatedSequenceStream} instead.
+ * @deprecated Use {@link InputLineFeedSeparatedSequenceStream} instead. (to be removed in v3.0.0)
  */
 export type InputLineFeedSeparattedSequenceStream = InputLineFeedSeparatedSequenceStream;

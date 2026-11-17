@@ -33,24 +33,3 @@ export class InputJsonSequenceParseStream<T> extends ParseStream<T> {
     super({ parse, errorFallback, writableStrategy, readableStrategy });
   }
 }
-
-// #region deprecated remove v2.0.0 -
-
-/**
- * @deprecated rename to InputJsonSequenceFormatStreamOptions
- * @see InputJsonSequenceParseStreamOptions
- */
-export type JsonSequenceFormatStreamOptions<T> = InputJsonSequenceParseStreamOptions<T>;
-
-/**
- * @deprecated rename to InputJsonSequenceFormatStream
- * @see InputJsonSequenceParseStream
- */
-export const JsonSequenceFormatStream = InputJsonSequenceParseStream;
-/**
- * @deprecated rename to InputJsonSequenceFormatStream
- * @see InputJsonSequenceParseStream
- */
-export type JsonSequenceFormatStream<T> = InputJsonSequenceParseStream<T>;
-
-// #endregion
