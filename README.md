@@ -129,6 +129,11 @@ const stream = new InputJsonLinesStream<MyType>({
     console.error("broken line:", chunk, error);
   },
 });
+
+// strict mode: abort the stream on the first broken record
+const strictStream = new InputJsonLinesStream<MyType>({
+  errorFallback: (e, { error }) => error(e),
+});
 ```
 
 ### Format Constants (subpath exports)
