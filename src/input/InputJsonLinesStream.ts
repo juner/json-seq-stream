@@ -1,14 +1,14 @@
 import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream.js";
 import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream.js";
-import { InputLineFeedSeparattedSequenceStream } from "./InputLineFeedSeparattedSequenceStream.js";
-import type { InputLineFeedSeparattedSequenceStreamOptions } from "./InputLineFeedSeparattedSequenceStream.js";
+import { InputLineFeedSeparatedSequenceStream } from "./InputLineFeedSeparatedSequenceStream.js";
+import type { InputLineFeedSeparatedSequenceStreamOptions } from "./InputLineFeedSeparatedSequenceStream.js";
 
-export type InputJsonLinesStreamOptions<T> = { label?: string } & TextDecoderOptions & InputLineFeedSeparattedSequenceStreamOptions & InputJsonSequenceParseStreamOptions<T>;
+export type InputJsonLinesStreamOptions<T> = { label?: string } & TextDecoderOptions & InputLineFeedSeparatedSequenceStreamOptions & InputJsonSequenceParseStreamOptions<T>;
 
 function makeInternalJsonLinesStream<T>(options?: InputJsonLinesStreamOptions<T>) {
   const { label, fatal, splitter, chunkEndSplit, parse, errorFallback } = options ?? {};
   const decoder = new TextDecoderStream(label, { fatal });
-  const sequence = new InputLineFeedSeparattedSequenceStream({ splitter, chunkEndSplit });
+  const sequence = new InputLineFeedSeparatedSequenceStream({ splitter, chunkEndSplit });
   const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback });
   const { writable } = decoder;
   const readable = decoder.readable
@@ -26,7 +26,7 @@ function makeInternalJsonLinesStream<T>(options?: InputJsonLinesStreamOptions<T>
  *
  * Internally, it composes:
  * - `TextDecoderStream`: Decodes binary data (e.g. UTF-8) into text.
- * - `InputLineFeedSeparattedSequenceStream`: Splits the text stream into individual lines
+ * - `InputLineFeedSeparatedSequenceStream`: Splits the text stream into individual lines
  *   using newline (`\n`) or custom delimiters.
  * - `InputJsonSequenceParseStream`: Parses each line as a JSON object of type `T`.
  *

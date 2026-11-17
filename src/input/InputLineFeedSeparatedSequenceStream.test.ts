@@ -1,8 +1,8 @@
 import { test } from "vitest";
-import { InputLineFeedSeparattedSequenceStream } from "./InputLineFeedSeparattedSequenceStream.js";
+import { InputLineFeedSeparatedSequenceStream } from "./InputLineFeedSeparatedSequenceStream.js";
 
 test("enqueue", async ({ expect }) => {
-  const { readable, writable } = new InputLineFeedSeparattedSequenceStream();
+  const { readable, writable } = new InputLineFeedSeparatedSequenceStream();
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push((async () => {

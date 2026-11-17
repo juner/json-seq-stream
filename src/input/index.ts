@@ -19,7 +19,7 @@ export * from "./InputJsonLinesStream.js";
 // #endregion
 
 // #region LF (or CRLF) split
-export * from "./InputLineFeedSeparattedSequenceStream.js";
+export * from "./InputLineFeedSeparatedSequenceStream.js";
 // #endregion
 
 // #region record -> sequence
