@@ -69,6 +69,28 @@ test("enqueue and start / end delimiter", async ({ expect }) => {
   expect(text).equal("|鶏|猫|犬|驢馬|");
 });
 
+test("real-time delimiter emission before close when end:true", async ({ expect }) => {
+  const { readable, writable } = new TextJoinStream({
+    delimiter: "\n",
+    start: false,
+    end: true,
+    skip: true,
+  });
+  const writer = writable.getWriter();
+  const reader = readable.getReader();
+
+  void writer.write("first");
+  expect(await reader.read()).toEqual({ value: "first", done: false });
+  expect(await reader.read()).toEqual({ value: "\n", done: false });
+
+  void writer.write("second");
+  expect(await reader.read()).toEqual({ value: "second", done: false });
+  expect(await reader.read()).toEqual({ value: "\n", done: false });
+
+  await writer.close();
+  expect(await reader.read()).toEqual({ value: undefined, done: true });
+});
+
 function make(options: ConstructorParameters<typeof TextJoinStream>[0]) {
   const { readable, writable } = new TextJoinStream(options);
   const response = new Response(readable.pipeThrough(new TextEncoderStream()));

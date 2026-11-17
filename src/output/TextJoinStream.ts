@@ -24,15 +24,13 @@ function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSpli
             controller.enqueue(delimiter);
           firstChunk = false;
         }
-        else {
+        else if (!endSplit) {
           controller.enqueue(delimiter);
         }
         controller.enqueue(chunk);
-      },
-      flush(controller: TransformStreamDefaultController<string>) {
-        if (firstChunk) return;
-        if (!endSplit) return;
-        controller.enqueue(delimiter);
+        if (endSplit) {
+          controller.enqueue(delimiter);
+        }
       },
     },
   ];
