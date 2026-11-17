@@ -1,3 +1,4 @@
+import type { QueuingStrategiesOptions } from "../types/index.js";
 import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
 
 export type TextJoinStreamOptions = {
@@ -9,9 +10,9 @@ export type TextJoinStreamOptions = {
   end: boolean
   /** skip empty string chunks */
   skip: boolean
-};
+} & QueuingStrategiesOptions<string, string>;
 
-function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSplit, skip: skipEmpty }: TextJoinStreamOptions): {
+function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSplit, skip: skipEmpty, writableStrategy, readableStrategy }: TextJoinStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   let firstChunk = true;
@@ -33,6 +34,8 @@ function makeInternalTextJoinStream({ delimiter, start: startSplit, end: endSpli
         }
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return {
     args,

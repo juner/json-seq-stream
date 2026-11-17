@@ -9,8 +9,9 @@ export type OutputJsonSequenceStringifyStreamOptions<T> = Partial<StringifyStrea
 export class OutputJsonSequenceStringifyStream<T> extends StringifyStream<T> {
   constructor(options?: OutputJsonSequenceStringifyStreamOptions<T>) {
     let { errorFallback, stringify } = options ?? {};
+    const { writableStrategy, readableStrategy } = options ?? {};
     errorFallback ??= false;
     stringify ??= JSON.stringify;
-    super({ stringify, errorFallback });
+    super({ stringify, errorFallback, writableStrategy, readableStrategy });
   }
 }

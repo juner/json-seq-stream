@@ -77,3 +77,12 @@ test("maxLength exceeded throws RangeError", async ({ expect }) => {
   }
   await expect(call()).rejects.toThrow(RangeError);
 });
+
+test("queuing strategies are applied", ({ expect }) => {
+  const { writable } = new TextSplitStream({
+    splitter: "\n",
+    chunkEndSplit: false,
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});

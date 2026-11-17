@@ -184,3 +184,22 @@ test("error to reject", async ({ expect }) => {
   }
   await expect(call()).rejects.toThrow(errorInstance);
 });
+
+test("queuing strategies are applied", async ({ expect }) => {
+  const sizes: string[] = [];
+  const { readable, writable } = new StringifyStream<number>({
+    stringify: String,
+    errorFallback: false,
+    writableStrategy: { highWaterMark: 7 },
+    readableStrategy: { highWaterMark: 1, size: (chunk) => {
+      sizes.push(chunk);
+      return 1;
+    } },
+  });
+  const writer = writable.getWriter();
+  expect(writer.desiredSize).toBe(7);
+  await writer.write(1);
+  expect(sizes).toEqual(["1"]);
+  await writer.close();
+  expect(await Array.fromAsync(readable.values())).toEqual(["1"]);
+});

@@ -15,8 +15,10 @@ export class InputLineFeedSeparatedSequenceStream extends TextSplitStream {
       splitter = LINEFEED_SEPARATOR,
       chunkEndSplit = false,
       maxLength,
+      writableStrategy,
+      readableStrategy,
     } = options ?? {};
-    super({ splitter, chunkEndSplit, maxLength });
+    super({ splitter, chunkEndSplit, maxLength, writableStrategy, readableStrategy });
   }
 }
 

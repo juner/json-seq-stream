@@ -40,3 +40,10 @@ function make<T = unknown>(options?: ConstructorParameters<typeof OutputJsonLine
   response.headers.append("content-type", MIME_TYPE);
   return { writable, response };
 }
+
+test("writableStrategy is forwarded to the stringify stream", ({ expect }) => {
+  const stream = new OutputJsonLinesStream<{ value: number }>({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(stream.writable.getWriter().desiredSize).toBe(7);
+});

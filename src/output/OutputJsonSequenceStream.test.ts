@@ -57,3 +57,10 @@ function make<T>(options?: ConstructorParameters<typeof OutputJsonSequenceStream
   response.headers.append("content-type", "application/json-seq");
   return { writable, response };
 }
+
+test("writableStrategy is forwarded to the stringify stream", ({ expect }) => {
+  const stream = new OutputJsonSequenceStream<{ value: number }>({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(stream.writable.getWriter().desiredSize).toBe(7);
+});

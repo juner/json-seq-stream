@@ -33,3 +33,20 @@ test("parseJsonLines helper with string and binary chunks", async ({ expect }) =
   const array = await Array.fromAsync(parseJsonLines<Value>(chunks));
   expect(array).toEqual([{ a: 1 }, { a: 2 }]);
 });
+
+test("readableStrategy is forwarded to the parse stream", async ({ expect }) => {
+  const sizes: unknown[] = [];
+  const stream = new InputJsonLinesStream<{ value: number }>({
+    readableStrategy: { highWaterMark: 1, size: (chunk) => {
+      sizes.push(chunk);
+      return 1;
+    } },
+  });
+  const writer = stream.writable.getWriter();
+  await writer.write(new TextEncoder().encode("{\"value\":1}\n"));
+  await writer.close();
+  // let the internal pipeline drain before reading, so enqueue uses the queue (and its size callback)
+  await new Promise(resolve => setTimeout(resolve, 0));
+  expect(sizes).toEqual([{ value: 1 }]);
+  expect(await Array.fromAsync(stream.readable)).toEqual([{ value: 1 }]);
+});

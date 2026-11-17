@@ -1,4 +1,4 @@
-import type { TransformStreamConstructor } from "../types/index.js";
+import type { QueuingStrategiesOptions, TransformStreamConstructor } from "../types/index.js";
 import { escapeRegExp } from "../internal/escapeRegExp.js";
 
 export type TextSplitStreamOptions = {
@@ -8,9 +8,9 @@ export type TextSplitStreamOptions = {
   chunkEndSplit: boolean
   /** maximum allowed length for a single split segment */
   maxLength?: number
-};
+} & QueuingStrategiesOptions<string, string>;
 
-function makeInternalTextSplitStream({ splitter, chunkEndSplit, maxLength }: TextSplitStreamOptions): {
+function makeInternalTextSplitStream({ splitter, chunkEndSplit, maxLength, writableStrategy, readableStrategy }: TextSplitStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const { separator, checker } = makeSeparator(splitter);
@@ -45,6 +45,8 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit, maxLength }: Tex
         enqueue(sequence, controller);
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return {
     args,

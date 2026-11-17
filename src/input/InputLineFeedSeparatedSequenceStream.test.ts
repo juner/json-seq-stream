@@ -17,3 +17,10 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveProperty("[1]", "NEKONEKO");
   expect(array).toHaveProperty("[2]", "INUINU");
 });
+
+test("queuing strategies are forwarded", ({ expect }) => {
+  const { writable } = new InputLineFeedSeparatedSequenceStream({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});

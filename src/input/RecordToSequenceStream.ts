@@ -1,3 +1,4 @@
+import type { QueuingStrategiesOptions } from "../types/index.js";
 import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
 import { escapeRegExp } from "../internal/escapeRegExp.js";
 
@@ -18,7 +19,7 @@ export type RecordToSequenceStreamOptions = {
   fallbackSkip: true | false | ((minChunk: string, mode: Mode, next: Mode) => boolean)
   /** maximum allowed length for a single record */
   maxLength?: number
-};
+} & QueuingStrategiesOptions<string, string>;
 
 function getTrailingPrefixLength(text: string, target: string): number {
   const maxLen = Math.min(text.length, target.length - 1);
@@ -56,7 +57,7 @@ function isJsonBalanced(text: string): boolean {
   return depth <= 0;
 }
 
-function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip, maxLength }: RecordToSequenceStreamOptions): {
+function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip, maxLength, writableStrategy, readableStrategy }: RecordToSequenceStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const sequence: string[] = [];
@@ -156,6 +157,8 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
         }
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return {
     args,

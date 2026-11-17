@@ -1,3 +1,4 @@
+import type { QueuingStrategiesOptions } from "../types/index.js";
 import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
 
 export type StringifyStreamOptions<T> = {
@@ -14,9 +15,9 @@ export type StringifyStreamOptions<T> = {
       chunk: T
       enqueue: (arg: string) => void
     }) => (void | Promise<void>))
-};
+} & QueuingStrategiesOptions<T, string>;
 
-function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyStreamOptions<T>): {
+function makeInternalStringifyStream<T>({ stringify, errorFallback, writableStrategy, readableStrategy }: StringifyStreamOptions<T>): {
   args: ConstructorParameters<TransformStreamConstructor<T, string>>
 } {
   const args: ConstructorParameters<TransformStreamConstructor<T, string>> = [
@@ -39,6 +40,8 @@ function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyS
         }
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return { args };
 }

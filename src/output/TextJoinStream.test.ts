@@ -96,3 +96,14 @@ function make(options: ConstructorParameters<typeof TextJoinStream>[0]) {
   const response = new Response(readable.pipeThrough(new TextEncoderStream()));
   return { writable, response };
 }
+
+test("queuing strategies are applied", ({ expect }) => {
+  const { writable } = new TextJoinStream({
+    delimiter: "\n",
+    start: false,
+    end: false,
+    skip: false,
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});

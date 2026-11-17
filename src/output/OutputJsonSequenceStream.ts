@@ -2,14 +2,16 @@ import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringify
 import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream.js";
 import { OutputRecordSequenceStream } from "./OutputRecordSequenceStream.js";
 import type { OutputRecordSequenceStreamOptions } from "./OutputRecordSequenceStream.js";
+import type { OmitQueuingStrategies } from "../types/index.js";
 
-export type OutputJsonSequenceStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputRecordSequenceStreamOptions;
+export type OutputJsonSequenceStreamOptions<T> = Omit<OutputJsonSequenceStringifyStreamOptions<T>, "readableStrategy">
+  & OmitQueuingStrategies<OutputRecordSequenceStreamOptions>;
 
 function makeInternalOutputJsonSequenceStream<T>(options: OutputJsonSequenceStreamOptions<T>) {
-  const { begin, end, skip, stringify, errorFallback } = options;
+  const { begin, end, skip, stringify, errorFallback, writableStrategy } = options;
   const encoder = new TextEncoderStream();
   const sequence = new OutputRecordSequenceStream({ begin, end, skip });
-  const jsonSequence = new OutputJsonSequenceStringifyStream({ stringify, errorFallback });
+  const jsonSequence = new OutputJsonSequenceStringifyStream({ stringify, errorFallback, writableStrategy });
   const { writable } = jsonSequence;
   const readable = jsonSequence.readable
     .pipeThrough(sequence)

@@ -1,4 +1,4 @@
-import type { TransformStreamConstructor } from "../types/index.js";
+import type { QueuingStrategiesOptions, TransformStreamConstructor } from "../types/index.js";
 
 export type ParseStreamOptions<T> = {
   /** A function that converts a string to type `T` (synchronously or asynchronously). */
@@ -14,9 +14,9 @@ export type ParseStreamOptions<T> = {
       chunk: string
       enqueue: (arg: T) => void
     }) => (void | Promise<void>))
-};
+} & QueuingStrategiesOptions<string, T>;
 
-function makeInternalParseStream<T>({ parse, errorFallback }: ParseStreamOptions<T>): {
+function makeInternalParseStream<T>({ parse, errorFallback, writableStrategy, readableStrategy }: ParseStreamOptions<T>): {
   args: ConstructorParameters<TransformStreamConstructor<string, T>>
 } {
   const args: ConstructorParameters<TransformStreamConstructor<string, T>> = [
@@ -39,6 +39,8 @@ function makeInternalParseStream<T>({ parse, errorFallback }: ParseStreamOptions
         }
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return { args };
 }

@@ -114,3 +114,10 @@ test("error to error", async ({ expect }) => {
   }
   await expect(call()).rejects.toThrow(errorInstance);
 });
+
+test("queuing strategies are forwarded", ({ expect }) => {
+  const { writable } = new OutputJsonSequenceStringifyStream({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});

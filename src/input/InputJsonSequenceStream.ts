@@ -2,14 +2,17 @@ import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream.js"
 import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream.js";
 import { InputRecordSequenceStream } from "./InputRecordSequenceStream.js";
 import type { InputRecordSequenceStreamOptions } from "./InputRecordSequenceStream.js";
+import type { OmitQueuingStrategies } from "../types/index.js";
 
-export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputRecordSequenceStreamOptions;
+export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions
+  & Omit<InputJsonSequenceParseStreamOptions<T>, "writableStrategy">
+  & OmitQueuingStrategies<InputRecordSequenceStreamOptions>;
 
 function makeInternalJsonSequenceStream<T>(options: InputJsonSequenceStreamOptions<T>) {
-  const { label, fatal, ignoreBOM, begin, end, chunkEndSplit, fallbackSkip, maxLength, parse, errorFallback } = options;
+  const { label, fatal, ignoreBOM, begin, end, chunkEndSplit, fallbackSkip, maxLength, parse, errorFallback, readableStrategy } = options;
   const decoder = new TextDecoderStream(label, { fatal, ignoreBOM });
   const sequence = new InputRecordSequenceStream({ begin, end, chunkEndSplit, fallbackSkip, maxLength });
-  const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback });
+  const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback, readableStrategy });
   const { writable } = decoder;
   const readable = decoder.readable
     .pipeThrough(sequence)

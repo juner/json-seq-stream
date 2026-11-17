@@ -14,9 +14,10 @@ function defaultParse<T>(text: string): T | undefined {
 export class InputJsonSequenceParseStream<T> extends ParseStream<T> {
   constructor(options?: InputJsonSequenceParseStreamOptions<T>) {
     let { errorFallback, parse } = options ?? {};
+    const { writableStrategy, readableStrategy } = options ?? {};
     parse ??= defaultParse;
     errorFallback ??= false;
-    super({ parse, errorFallback });
+    super({ parse, errorFallback, writableStrategy, readableStrategy });
   }
 }
 

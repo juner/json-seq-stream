@@ -178,3 +178,14 @@ test("trailing partial begin flushed when fallbackSkip:false", async ({ expect }
   const array = await Array.fromAsync(readable);
   expect(array).toEqual(["123", "<"]);
 });
+
+test("queuing strategies are applied", ({ expect }) => {
+  const { writable } = new RecordToSequenceStream({
+    begin: "\u001e",
+    end: "\n",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});
