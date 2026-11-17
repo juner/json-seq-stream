@@ -47,6 +47,20 @@ test("multi-char splitter across chunk boundary", async ({ expect }) => {
   expect(array).toEqual(["a", "b", "c", "d"]);
 });
 
+test("regex special character splitter is treated literally", async ({ expect }) => {
+  const { readable, writable } = new TextSplitStream({
+    splitter: ["|", ".*"],
+    chunkEndSplit: false,
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write("foo|bar.*baz");
+    await writer.close();
+  })();
+  const array = await Array.fromAsync(readable);
+  expect(array).toEqual(["foo", "bar", "baz"]);
+});
+
 test("maxLength exceeded throws RangeError", async ({ expect }) => {
   const { readable, writable } = new TextSplitStream({
     splitter: "\n",

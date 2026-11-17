@@ -1,4 +1,5 @@
 import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
+import { escapeRegExp } from "../internal/escapeRegExp.js";
 
 const modes = {
   begin: "begin",
@@ -62,7 +63,7 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
   let carry = "";
   const parts = [recordBegin, recordEnd]
     .sort((a, b) => b.length - a.length)
-    .map(s => RegExp.escape(s))
+    .map(s => escapeRegExp(s))
     .join("|");
   const separator = new RegExp(`(${parts})`, "u");
   const fallback = fallbackSkip === true

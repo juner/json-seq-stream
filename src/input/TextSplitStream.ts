@@ -1,4 +1,5 @@
 import type { TransformStreamConstructor } from "../types/index.js";
+import { escapeRegExp } from "../internal/escapeRegExp.js";
 
 export type TextSplitStreamOptions = {
   /** separator character */
@@ -60,7 +61,7 @@ function makeSeparator(separator: string[] | string) {
     separator = [separator];
   const parts = [...separator]
     .sort((a, b) => b.length - a.length)
-    .map(s => RegExp.escape(s))
+    .map(s => escapeRegExp(s))
     .join("|");
   return {
     separator: new RegExp(`(${parts})`, "ug"),
