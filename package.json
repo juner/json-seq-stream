@@ -1,7 +1,7 @@
 {
   "name": "json-seq-stream",
   "version": "1.0.11",
-  "description": "application/json-seq support stream / async iterator library",
+  "description": "application/json-seq and jsonl (NDJSON) support stream / async iterator library",
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -28,12 +28,17 @@
   },
   "keywords": [
     "application/json-seq",
+    "application/jsonl",
+    "application/x-ndjson",
     "TransformStream",
     "web streams",
     "asyncIterator",
     "Symbol.asyncIterator",
     "rfc7464",
-    "json-seq"
+    "json-seq",
+    "jsonl",
+    "ndjson",
+    "jsonlines"
   ],
   "author": "juners",
   "license": "MIT",
