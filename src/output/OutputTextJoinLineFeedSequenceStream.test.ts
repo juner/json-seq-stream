@@ -15,3 +15,10 @@ test("enqueue", async ({ expect }) => {
   const text = await response.text();
   expect(text).equal(`🐈🐶\n🐒🐓\n🐕🐗`);
 });
+
+test("queuing strategies are forwarded", ({ expect }) => {
+  const { writable } = new OutputTextJoinLineFeedSequenceStream({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});

@@ -1,11 +1,13 @@
-import { resolve } from "path";
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
-      name: "index",
-      fileName: "index",
+      entry: {
+        index: resolve(__dirname, "src/index.ts"),
+        rfc7464: resolve(__dirname, "src/rfc7464.ts"),
+        jsonlines: resolve(__dirname, "src/jsonlines.ts"),
+      },
       formats: ["es"],
     },
   },

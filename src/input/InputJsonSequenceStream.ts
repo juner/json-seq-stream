@@ -2,14 +2,17 @@ import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream.js"
 import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream.js";
 import { InputRecordSequenceStream } from "./InputRecordSequenceStream.js";
 import type { InputRecordSequenceStreamOptions } from "./InputRecordSequenceStream.js";
+import type { OmitQueuingStrategies } from "../types/index.js";
 
-export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions & InputJsonSequenceParseStreamOptions<T> & InputRecordSequenceStreamOptions;
+export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoderOptions
+  & Omit<InputJsonSequenceParseStreamOptions<T>, "writableStrategy">
+  & OmitQueuingStrategies<InputRecordSequenceStreamOptions>;
 
 function makeInternalJsonSequenceStream<T>(options: InputJsonSequenceStreamOptions<T>) {
-  const { label, fatal, begin, end, parse, errorFallback } = options;
-  const decoder = new TextDecoderStream(label, { fatal });
-  const sequence = new InputRecordSequenceStream({ begin, end });
-  const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback });
+  const { label, fatal, ignoreBOM, begin, end, chunkEndSplit, fallbackSkip, maxLength, truncationFallback, parse, errorFallback, readableStrategy } = options;
+  const decoder = new TextDecoderStream(label, { fatal, ignoreBOM });
+  const sequence = new InputRecordSequenceStream({ begin, end, chunkEndSplit, fallbackSkip, maxLength, truncationFallback });
+  const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback, readableStrategy });
   const { writable } = decoder;
   const readable = decoder.readable
     .pipeThrough(sequence)
@@ -56,6 +59,27 @@ export class InputJsonSequenceStream<T> implements ReadableWritablePair<T, Buffe
   }
 }
 
+/**
+ * Parses an `AsyncIterable` or `Iterable` of binary or string chunks in `application/json-seq` format
+ * and yields typed JSON values (`T`).
+ */
+export async function* parseJsonSequence<T>(
+  source: AsyncIterable<BufferSource | string> | Iterable<BufferSource | string>,
+  options?: InputJsonSequenceStreamOptions<T>,
+): AsyncGenerator<T, void, undefined> {
+  const stream = new InputJsonSequenceStream<T>(options);
+  const writer = stream.writable.getWriter();
+  const encoder = new TextEncoder();
+  const writePromise = (async () => {
+    for await (const chunk of source) {
+      await writer.write(typeof chunk === "string" ? encoder.encode(chunk) : chunk);
+    }
+    await writer.close();
+  })();
+  yield* stream.readable;
+  await writePromise;
+}
+
 // #region deprecated remove to version 2.0.0 -
 
 /**
@@ -63,6 +87,11 @@ export class InputJsonSequenceStream<T> implements ReadableWritablePair<T, Buffe
  * @see InputJsonSequenceStream
  */
 export const JsonSequenceStream = InputJsonSequenceStream;
+/**
+ * @deprecated rename to InputJsonSequenceStream
+ * @see InputJsonSequenceStream
+ */
+export type JsonSequenceStream<T> = InputJsonSequenceStream<T>;
 
 /**
  * @deprecated rename to InputJsonSequenceStreamOptions

@@ -1,13 +1,16 @@
-import type { TransformStreamConstructor } from "../types/index.js";
+import type { QueuingStrategiesOptions, TransformStreamConstructor } from "../types/index.js";
+import { escapeRegExp } from "../internal/escapeRegExp.js";
 
 export type TextSplitStreamOptions = {
   /** separator character */
   splitter: string | string[]
   /** chunk end split force */
   chunkEndSplit: boolean
-};
+  /** maximum allowed length for a single split segment */
+  maxLength?: number
+} & QueuingStrategiesOptions<string, string>;
 
-function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStreamOptions): {
+function makeInternalTextSplitStream({ splitter, chunkEndSplit, maxLength, writableStrategy, readableStrategy }: TextSplitStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const { separator, checker } = makeSeparator(splitter);
@@ -27,6 +30,11 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
           }
 
           sequence.push(c);
+          if (maxLength !== undefined && sequence.join("").length > maxLength) {
+            sequence.splice(0, sequence.length);
+            controller.error(new RangeError(`Maximum length (${maxLength}) exceeded`));
+            return;
+          }
         }
 
         // chunk end split
@@ -37,6 +45,8 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
         enqueue(sequence, controller);
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return {
     args,
@@ -45,16 +55,19 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
 
 /**
  * string[] or string -> RegExp
- * @param separater
+ * @param separator
  * @returns
  */
-function makeSeparator(separater: string[] | string) {
-  if (typeof separater === "string")
-    separater = [separater];
-  const parts = separater.map(s => RegExp.escape(s)).join("|");
+function makeSeparator(separator: string[] | string) {
+  if (typeof separator === "string")
+    separator = [separator];
+  const parts = [...separator]
+    .sort((a, b) => b.length - a.length)
+    .map(s => escapeRegExp(s))
+    .join("|");
   return {
     separator: new RegExp(`(${parts})`, "ug"),
-    checker: new RegExp(`^(${parts})$`),
+    checker: new RegExp(`^(${parts})$`, "u"),
   };
 }
 

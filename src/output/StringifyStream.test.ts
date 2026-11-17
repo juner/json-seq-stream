@@ -11,6 +11,19 @@ test("empty", async ({ expect }) => {
   expect(array.length).toEqual(0);
 });
 
+test("empty string is enqueued", async ({ expect }) => {
+  const { readable, writable } = new StringifyStream<string>({
+    stringify: () => ``,
+    errorFallback: false,
+  });
+  const writer = writable.getWriter();
+  const arrayWait = Array.fromAsync(readable.values());
+  await writer.write("anything");
+  await writer.close();
+  const array = await arrayWait;
+  expect(array).toEqual([``]);
+});
+
 test("stringify empty", async ({ expect }) => {
   type Value = {
     value: number
@@ -48,6 +61,24 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveLength(2);
   expect(array).toHaveProperty("0", `{"value":10}`);
   expect(array).toHaveProperty("1", `{"value":5}`);
+});
+
+test("async stringify", async ({ expect }) => {
+  type Value = { value: number };
+  const { readable, writable } = new StringifyStream<Value>({
+    stringify: async (v) => {
+      await Promise.resolve();
+      return JSON.stringify(v);
+    },
+    errorFallback: false,
+  });
+  const writer = writable.getWriter();
+  const arrayWait = Array.fromAsync(readable.values());
+  await writer.write({ value: 1 });
+  await writer.write({ value: 2 });
+  await writer.close();
+  const array = await arrayWait;
+  expect(array).toEqual([`{"value":1}`, `{"value":2}`]);
 });
 
 test("error to skip", async ({ expect }) => {
@@ -152,4 +183,23 @@ test("error to reject", async ({ expect }) => {
     await Promise.all(promises);
   }
   await expect(call()).rejects.toThrow(errorInstance);
+});
+
+test("queuing strategies are applied", async ({ expect }) => {
+  const sizes: string[] = [];
+  const { readable, writable } = new StringifyStream<number>({
+    stringify: String,
+    errorFallback: false,
+    writableStrategy: { highWaterMark: 7 },
+    readableStrategy: { highWaterMark: 1, size: (chunk) => {
+      sizes.push(chunk);
+      return 1;
+    } },
+  });
+  const writer = writable.getWriter();
+  expect(writer.desiredSize).toBe(7);
+  await writer.write(1);
+  expect(sizes).toEqual(["1"]);
+  await writer.close();
+  expect(await Array.fromAsync(readable.values())).toEqual(["1"]);
 });

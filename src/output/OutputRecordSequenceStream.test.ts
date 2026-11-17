@@ -28,3 +28,10 @@ function make(options?: ConstructorParameters<typeof OutputRecordSequenceStream>
   const response = new Response(readable.pipeThrough(new TextEncoderStream()));
   return { response, writable };
 }
+
+test("queuing strategies are forwarded", ({ expect }) => {
+  const { writable } = new OutputRecordSequenceStream({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});

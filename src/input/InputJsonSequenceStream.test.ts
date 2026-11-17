@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { InputJsonSequenceStream } from "./index.js";
+import { InputJsonSequenceStream, parseJsonSequence } from "./index.js";
 
 test("empty", async ({ expect }) => {
   type Value = {
@@ -29,4 +29,79 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveLength(2);
   expect(array).toHaveProperty("[0].value", 30);
   expect(array).toHaveProperty("[1].value", 3);
+});
+
+test("options forwarding", async ({ expect }) => {
+  const stream = new InputJsonSequenceStream<number>({
+    ignoreBOM: true,
+    begin: "<<",
+    end: ">>",
+    chunkEndSplit: false,
+    fallbackSkip: true,
+  });
+  const writer = stream.writable.getWriter();
+  const encoder = new TextEncoder();
+  const arrayWait = Array.fromAsync(stream.readable.values());
+  await writer.write(encoder.encode("garbage<"));
+  await writer.write(encoder.encode("<0>><<1>>trailing"));
+  await writer.close();
+  const array = await arrayWait;
+  expect(array).toEqual([0, 1]);
+});
+
+test("pretty-printed multi-line JSON and truncated record recovery", async ({ expect }) => {
+  type Value = { id: number, tags?: string[] };
+  const stream = new InputJsonSequenceStream<Value>();
+  const writer = stream.writable.getWriter();
+  const encoder = new TextEncoder();
+  const arrayWait = Array.fromAsync(stream.readable.values());
+
+  await writer.write(encoder.encode(`\u001e{\n  "id": 1,\n  "tags": [\n    "a",\n    "b"\n  ]\n}\n`));
+  await writer.write(encoder.encode(`\u001e{\n  "id": "truncated"\n\u001e   \n\u001e{"id": 2}\n`));
+  await writer.close();
+
+  const array = await arrayWait;
+  expect(array).toEqual([
+    { id: 1, tags: ["a", "b"] },
+    { id: 2 },
+  ]);
+});
+
+test("parseJsonSequence helper with string and binary chunks", async ({ expect }) => {
+  type Value = { id: number };
+  const encoder = new TextEncoder();
+  async function* generate() {
+    await Promise.resolve();
+    yield `\u001e{"id":1}\n`;
+    yield encoder.encode(`\u001e{"id":2}\n`);
+  }
+  const array = await Array.fromAsync(parseJsonSequence<Value>(generate()));
+  expect(array).toEqual([{ id: 1 }, { id: 2 }]);
+});
+
+test("readableStrategy is forwarded to the parse stream", async ({ expect }) => {
+  const sizes: unknown[] = [];
+  const stream = new InputJsonSequenceStream<{ value: number }>({
+    readableStrategy: { highWaterMark: 1, size: (chunk) => {
+      sizes.push(chunk);
+      return 1;
+    } },
+  });
+  const writer = stream.writable.getWriter();
+  await writer.write(new TextEncoder().encode("\u001e{\"value\":1}\n"));
+  await writer.close();
+  // let the internal pipeline drain before reading, so enqueue uses the queue (and its size callback)
+  await new Promise(resolve => setTimeout(resolve, 0));
+  expect(sizes).toEqual([{ value: 1 }]);
+  expect(await Array.fromAsync(stream.readable.values())).toEqual([{ value: 1 }]);
+});
+
+test("truncationFallback is forwarded to the record sequence stream", async ({ expect }) => {
+  type Value = { value: number };
+  const stream = new InputJsonSequenceStream<Value>({ truncationFallback: false });
+  const writer = stream.writable.getWriter();
+  const arrayWait = Array.fromAsync(stream.readable.values());
+  await writer.write(new TextEncoder().encode("\u001e{\"value\":1}\n\u001e{\"value\":2"));
+  await writer.close();
+  expect(await arrayWait).toEqual([{ value: 1 }]);
 });

@@ -1,15 +1,18 @@
 import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream.js";
 import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream.js";
-import { InputLineFeedSeparattedSequenceStream } from "./InputLineFeedSeparattedSequenceStream.js";
-import type { InputLineFeedSeparattedSequenceStreamOptions } from "./InputLineFeedSeparattedSequenceStream.js";
+import { InputLineFeedSeparatedSequenceStream } from "./InputLineFeedSeparatedSequenceStream.js";
+import type { InputLineFeedSeparatedSequenceStreamOptions } from "./InputLineFeedSeparatedSequenceStream.js";
+import type { OmitQueuingStrategies } from "../types/index.js";
 
-export type InputJsonLinesStreamOptions<T> = { label?: string } & TextDecoderOptions & InputLineFeedSeparattedSequenceStreamOptions & InputJsonSequenceParseStreamOptions<T>;
+export type InputJsonLinesStreamOptions<T> = { label?: string } & TextDecoderOptions
+  & OmitQueuingStrategies<InputLineFeedSeparatedSequenceStreamOptions>
+  & Omit<InputJsonSequenceParseStreamOptions<T>, "writableStrategy">;
 
-function makeInternalJsonLinesStream<T>(options?: InputJsonLinesStreamOptions<T>) {
-  const { label, fatal, splitter, chunkEndSplit, parse, errorFallback } = options ?? {};
-  const decoder = new TextDecoderStream(label, { fatal });
-  const sequence = new InputLineFeedSeparattedSequenceStream({ splitter, chunkEndSplit });
-  const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback });
+function makeInternalJsonLinesStream<T>(options: InputJsonLinesStreamOptions<T>) {
+  const { label, fatal, ignoreBOM, splitter, chunkEndSplit, maxLength, parse, errorFallback, readableStrategy } = options;
+  const decoder = new TextDecoderStream(label, { fatal, ignoreBOM });
+  const sequence = new InputLineFeedSeparatedSequenceStream({ splitter, chunkEndSplit, maxLength });
+  const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback, readableStrategy });
   const { writable } = decoder;
   const readable = decoder.readable
     .pipeThrough(sequence)
@@ -26,7 +29,7 @@ function makeInternalJsonLinesStream<T>(options?: InputJsonLinesStreamOptions<T>
  *
  * Internally, it composes:
  * - `TextDecoderStream`: Decodes binary data (e.g. UTF-8) into text.
- * - `InputLineFeedSeparattedSequenceStream`: Splits the text stream into individual lines
+ * - `InputLineFeedSeparatedSequenceStream`: Splits the text stream into individual lines
  *   using newline (`\n`) or custom delimiters.
  * - `InputJsonSequenceParseStream`: Parses each line as a JSON object of type `T`.
  *
@@ -49,10 +52,31 @@ export class InputJsonLinesStream<T> implements ReadableWritablePair<T, BufferSo
   #readable: ReadableStream<T>;
   get writable() { return this.#writable; }
   get readable() { return this.#readable; }
-  constructor(options?: InputJsonLinesStreamOptions<T>) {
+  constructor(options: InputJsonLinesStreamOptions<T> = {}) {
     ({
       readable: this.#readable,
       writable: this.#writable,
     } = makeInternalJsonLinesStream(options));
   }
+}
+
+/**
+ * Parses an `AsyncIterable` or `Iterable` of binary or string chunks in NDJSON / JSON Lines format
+ * and yields typed JSON values (`T`).
+ */
+export async function* parseJsonLines<T>(
+  source: AsyncIterable<BufferSource | string> | Iterable<BufferSource | string>,
+  options?: InputJsonLinesStreamOptions<T>,
+): AsyncGenerator<T, void, undefined> {
+  const stream = new InputJsonLinesStream<T>(options);
+  const writer = stream.writable.getWriter();
+  const encoder = new TextEncoder();
+  const writePromise = (async () => {
+    for await (const chunk of source) {
+      await writer.write(typeof chunk === "string" ? encoder.encode(chunk) : chunk);
+    }
+    await writer.close();
+  })();
+  yield* stream.readable;
+  await writePromise;
 }

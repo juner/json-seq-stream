@@ -1,8 +1,9 @@
+import type { QueuingStrategiesOptions } from "../types/index.js";
 import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
 
 export type StringifyStreamOptions<T> = {
-  /** A function that converts a `T` value to a string. */
-  stringify: (value: T) => (string | undefined)
+  /** A function that converts a `T` value to a string (synchronously or asynchronously). */
+  stringify: (value: T) => (string | undefined | Promise<string | undefined>)
   /**
    * A function that handles errors during stringification. It receives the error,
    * the original value, and helper methods (`enqueue`, `error`) to control the stream behavior.
@@ -14,28 +15,33 @@ export type StringifyStreamOptions<T> = {
       chunk: T
       enqueue: (arg: string) => void
     }) => (void | Promise<void>))
-};
+} & QueuingStrategiesOptions<T, string>;
 
-function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyStreamOptions<T>): {
+function makeInternalStringifyStream<T>({ stringify, errorFallback, writableStrategy, readableStrategy }: StringifyStreamOptions<T>): {
   args: ConstructorParameters<TransformStreamConstructor<T, string>>
 } {
   const args: ConstructorParameters<TransformStreamConstructor<T, string>> = [
     {
-      transform(chunk, controller) {
+      async transform(chunk, controller) {
         try {
-          const result = stringify(chunk);
-          if ((result?.length ?? 0) > 0) controller.enqueue(result);
+          const result = await stringify(chunk);
+          if (result !== undefined) controller.enqueue(result);
         }
         catch (e: unknown) {
           if (!errorFallback) return;
           const error = controller.error.bind(controller);
           const enqueue = controller.enqueue.bind(controller);
-          const reuslt = errorFallback(e, { chunk, error, enqueue });
-          if (reuslt?.then)
-            return reuslt.catch(() => undefined);
+          try {
+            await errorFallback(e, { chunk, error, enqueue });
+          }
+          catch {
+            return;
+          }
         }
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return { args };
 }
@@ -45,7 +51,7 @@ function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyS
  * customizable stringifier function.
  *
  * This stream applies a user-provided `stringify` function to each incoming `T` value.
- * If the function returns a non-empty string, it is emitted as output.
+ * If the function returns a string (not `undefined`), it is emitted as output.
  * If the stringification process throws an error, an optional `errorFallback` handler
  * can be used to recover or handle the error.
  *

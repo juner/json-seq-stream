@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { OutputJsonSequenceStream } from "../index.js";
+import { OutputJsonSequenceStream, parseJsonSequence, stringifyJsonSequence } from "../index.js";
 
 test("empty", async ({ expect }) => {
   type Value = {
@@ -26,9 +26,41 @@ test("enqueue", async ({ expect }) => {
   expect(text).equal(`\u001e{"value":30}\n\u001e{"value":3}\n`);
 });
 
+test("options skip", async ({ expect }) => {
+  const { writable, response } = make<number | undefined>({
+    begin: "<",
+    end: ">",
+    skip: true,
+    stringify: v => (v === undefined ? "" : JSON.stringify(v)),
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write(1);
+    await writer.write(undefined);
+    await writer.write(2);
+    await writer.close();
+  })();
+  const text = await response.text();
+  expect(text).equal(`<1><2>`);
+});
+
+test("stringifyJsonSequence round-trip with parseJsonSequence", async ({ expect }) => {
+  type Value = { id: number };
+  const input: Value[] = [{ id: 1 }, { id: 2 }];
+  const array = await Array.fromAsync(parseJsonSequence<Value>(stringifyJsonSequence(input)));
+  expect(array).toEqual(input);
+});
+
 function make<T>(options?: ConstructorParameters<typeof OutputJsonSequenceStream<T>>[0]) {
   const { readable, writable } = new OutputJsonSequenceStream(options);
   const response = new Response(readable);
   response.headers.append("content-type", "application/json-seq");
   return { writable, response };
 }
+
+test("writableStrategy is forwarded to the stringify stream", ({ expect }) => {
+  const stream = new OutputJsonSequenceStream<{ value: number }>({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(stream.writable.getWriter().desiredSize).toBe(7);
+});

@@ -2,14 +2,16 @@ import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringify
 import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream.js";
 import { OutputTextJoinLineFeedSequenceStream } from "./OutputTextJoinLineFeedSequenceStream.js";
 import type { OutputTextJoinLineFeedSequenceStreamOptions } from "./OutputTextJoinLineFeedSequenceStream.js";
+import type { OmitQueuingStrategies } from "../types/index.js";
 
-export type OutputJsonLinesStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputTextJoinLineFeedSequenceStreamOptions;
+export type OutputJsonLinesStreamOptions<T> = Omit<OutputJsonSequenceStringifyStreamOptions<T>, "readableStrategy">
+  & OmitQueuingStrategies<OutputTextJoinLineFeedSequenceStreamOptions>;
 
 function makeInternalOutputJsonLinesStream<T>(options: OutputJsonLinesStreamOptions<T>) {
-  const { delimiter, skip, start, end, stringify, errorFallback } = options;
+  const { delimiter, skip, start, end = true, stringify, errorFallback, writableStrategy } = options;
   const encoder = new TextEncoderStream();
   const sequence = new OutputTextJoinLineFeedSequenceStream({ delimiter, end, skip, start });
-  const jsonSequence = new OutputJsonSequenceStringifyStream({ stringify, errorFallback });
+  const jsonSequence = new OutputJsonSequenceStringifyStream({ stringify, errorFallback, writableStrategy });
   const { writable } = jsonSequence;
   const readable = jsonSequence.readable
     .pipeThrough(sequence)
@@ -47,9 +49,9 @@ function makeInternalOutputJsonLinesStream<T>(options: OutputJsonLinesStreamOpti
  * stream.writable.getWriter().write({ id: 1 });
  * ```
  */
-export class OutputJsonLinesStream<T> implements ReadableWritablePair<BufferSource, T> {
+export class OutputJsonLinesStream<T> implements ReadableWritablePair<Uint8Array<ArrayBuffer>, T> {
   #writable: WritableStream<T>;
-  #readable: ReadableStream<BufferSource>;
+  #readable: ReadableStream<Uint8Array<ArrayBuffer>>;
   get writable() { return this.#writable; }
   get readable() { return this.#readable; }
   constructor(options: OutputJsonLinesStreamOptions<T> = {}) {
@@ -58,4 +60,23 @@ export class OutputJsonLinesStream<T> implements ReadableWritablePair<BufferSour
       writable: this.#writable,
     } = makeInternalOutputJsonLinesStream(options));
   }
+}
+
+/**
+ * Serializes an `AsyncIterable` or `Iterable` of typed values (`T`) into NDJSON / JSON Lines binary chunks.
+ */
+export async function* stringifyJsonLines<T>(
+  source: AsyncIterable<T> | Iterable<T>,
+  options?: OutputJsonLinesStreamOptions<T>,
+): AsyncGenerator<Uint8Array<ArrayBuffer>, void, undefined> {
+  const stream = new OutputJsonLinesStream<T>(options);
+  const writer = stream.writable.getWriter();
+  const writePromise = (async () => {
+    for await (const item of source) {
+      await writer.write(item);
+    }
+    await writer.close();
+  })();
+  yield* stream.readable;
+  await writePromise;
 }

@@ -1,8 +1,8 @@
 import { test } from "vitest";
-import { InputLineFeedSeparattedSequenceStream } from "./InputLineFeedSeparattedSequenceStream.js";
+import { InputLineFeedSeparatedSequenceStream } from "./InputLineFeedSeparatedSequenceStream.js";
 
 test("enqueue", async ({ expect }) => {
-  const { readable, writable } = new InputLineFeedSeparattedSequenceStream();
+  const { readable, writable } = new InputLineFeedSeparatedSequenceStream();
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   promises.push((async () => {
@@ -16,4 +16,11 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveProperty("[0]", "TESTTESTTEST");
   expect(array).toHaveProperty("[1]", "NEKONEKO");
   expect(array).toHaveProperty("[2]", "INUINU");
+});
+
+test("queuing strategies are forwarded", ({ expect }) => {
+  const { writable } = new InputLineFeedSeparatedSequenceStream({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
 });

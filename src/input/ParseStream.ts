@@ -1,8 +1,8 @@
-import type { TransformStreamConstructor } from "../types/index.js";
+import type { QueuingStrategiesOptions, TransformStreamConstructor } from "../types/index.js";
 
 export type ParseStreamOptions<T> = {
-  /** A function that converts a string to type `T`. */
-  parse: (text: string) => (T | undefined)
+  /** A function that converts a string to type `T` (synchronously or asynchronously). */
+  parse: (text: string) => (T | undefined | Promise<T | undefined>)
   /**
    * A function that handles parse errors. It receives the error,
    * the original chunk, and helper methods (`enqueue`, `error`) to control the stream behavior.
@@ -14,28 +14,33 @@ export type ParseStreamOptions<T> = {
       chunk: string
       enqueue: (arg: T) => void
     }) => (void | Promise<void>))
-};
+} & QueuingStrategiesOptions<string, T>;
 
-function makeInternalParseStream<T>({ parse, errorFallback }: ParseStreamOptions<T>): {
+function makeInternalParseStream<T>({ parse, errorFallback, writableStrategy, readableStrategy }: ParseStreamOptions<T>): {
   args: ConstructorParameters<TransformStreamConstructor<string, T>>
 } {
   const args: ConstructorParameters<TransformStreamConstructor<string, T>> = [
     {
-      transform(chunk, controller) {
+      async transform(chunk, controller) {
         try {
-          const result = parse(chunk);
-          if (result) controller.enqueue(result);
+          const result = await parse(chunk);
+          if (result !== undefined) controller.enqueue(result);
         }
         catch (e: unknown) {
           if (!errorFallback) return;
           const error = controller.error.bind(controller);
           const enqueue = controller.enqueue.bind(controller);
-          const reuslt = errorFallback(e, { chunk, error, enqueue });
-          if (reuslt?.then)
-            return reuslt.catch(() => undefined);
+          try {
+            await errorFallback(e, { chunk, error, enqueue });
+          }
+          catch {
+            return;
+          }
         }
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return { args };
 }

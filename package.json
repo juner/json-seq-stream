@@ -1,18 +1,27 @@
 {
   "name": "json-seq-stream",
   "version": "1.0.11",
-  "description": "application/json-seq support stream / async iterator library",
+  "description": "application/json-seq and jsonl (NDJSON) support stream / async iterator library",
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./rfc7464": {
+      "types": "./dist/rfc7464.d.ts",
+      "default": "./dist/rfc7464.js"
+    },
+    "./jsonlines": {
+      "types": "./dist/jsonlines.d.ts",
+      "default": "./dist/jsonlines.js"
     }
   },
   "scripts": {
@@ -28,17 +37,22 @@
   },
   "keywords": [
     "application/json-seq",
+    "application/jsonl",
+    "application/x-ndjson",
     "TransformStream",
     "web streams",
     "asyncIterator",
     "Symbol.asyncIterator",
     "rfc7464",
-    "json-seq"
+    "json-seq",
+    "jsonl",
+    "ndjson",
+    "jsonlines"
   ],
   "author": "juners",
   "license": "MIT",
   "engines": {
-    "node": ">=24.x"
+    "node": ">=20"
   },
   "bugs": {
     "url": "https://github.com/juner/json-seq-stream/issues"

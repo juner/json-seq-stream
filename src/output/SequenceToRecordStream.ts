@@ -1,3 +1,4 @@
+import type { QueuingStrategiesOptions } from "../types/index.js";
 import type { TransformStreamConstructor } from "../types/TransformStreamConstructor.js";
 
 export type SequenceToRecordStreamOptions = {
@@ -7,9 +8,9 @@ export type SequenceToRecordStreamOptions = {
   end: string
   /** empty chunk skip enable */
   skip: boolean
-};
+} & QueuingStrategiesOptions<string, string>;
 
-function makeInternalSequenceToRecordStream({ begin: recordBegin, end: recordEnd, skip: emptySkip }: SequenceToRecordStreamOptions): {
+function makeInternalSequenceToRecordStream({ begin: recordBegin, end: recordEnd, skip: emptySkip, writableStrategy, readableStrategy }: SequenceToRecordStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const args: ConstructorParameters<TransformStreamConstructor<string, string>> = [
@@ -21,6 +22,8 @@ function makeInternalSequenceToRecordStream({ begin: recordBegin, end: recordEnd
         controller.enqueue(recordEnd);
       },
     },
+    writableStrategy,
+    readableStrategy,
   ];
   return {
     args,

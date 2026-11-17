@@ -43,11 +43,31 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveProperty("1", `{"value":5}`);
 });
 
-test("error to skip", async ({ expect }) => {
+test("default errorFallback errors the stream", async ({ expect }) => {
   type Value = {
     value: unknown
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>();
+  const writer = writable.getWriter();
+  async function call() {
+    const promises: Promise<unknown>[] = [];
+    const value1: Value = { value: undefined };
+    const value2: Value = { value: undefined };
+    value1.value = value2;
+    value2.value = value1;
+    promises.push(writer.write(value1));
+    promises.push(Array.fromAsync(readable.values()));
+    promises.push(writer.close());
+    await Promise.all(promises);
+  }
+  await expect(call()).rejects.toThrow(TypeError);
+});
+
+test("errorFallback: false skips the value silently", async ({ expect }) => {
+  type Value = {
+    value: unknown
+  };
+  const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({ errorFallback: false });
   const writer = writable.getWriter();
   const promises: Promise<unknown>[] = [];
   const value1: Value = { value: undefined };
@@ -113,4 +133,11 @@ test("error to error", async ({ expect }) => {
     await Promise.all(promises);
   }
   await expect(call()).rejects.toThrow(errorInstance);
+});
+
+test("queuing strategies are forwarded", ({ expect }) => {
+  const { writable } = new OutputJsonSequenceStringifyStream({
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
 });

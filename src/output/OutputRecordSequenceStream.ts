@@ -35,5 +35,10 @@ export type OutputSequenceStreamOptions = SequenceToRecordStreamOptions;
  * @see OutputRecordSequenceStream
  */
 export const OutputSequenceStream = OutputRecordSequenceStream;
+/**
+ * @deprecated rename to OutputRecordSequenceStream
+ * @see OutputRecordSequenceStream
+ */
+export type OutputSequenceStream = OutputRecordSequenceStream;
 
 // #endregion

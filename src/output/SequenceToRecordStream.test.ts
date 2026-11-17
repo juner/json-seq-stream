@@ -34,3 +34,13 @@ function make(options: ConstructorParameters<typeof SequenceToRecordStream>[0]) 
   const response = new Response(readable.pipeThrough(new TextEncoderStream()));
   return { writable, response };
 }
+
+test("queuing strategies are applied", ({ expect }) => {
+  const { writable } = new SequenceToRecordStream({
+    begin: "\u001e",
+    end: "\n",
+    skip: false,
+    writableStrategy: { highWaterMark: 7 },
+  });
+  expect(writable.getWriter().desiredSize).toBe(7);
+});

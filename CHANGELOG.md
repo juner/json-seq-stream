@@ -1,5 +1,75 @@
 # CHANGELOG
 
+## v2.0.0
+
+- [npm:json-seq-stream@2.0.0](https://www.npmjs.com/package/json-seq-stream/v/2.0.0)
+- [github:juner/json-seq-stream/releases/tag/v2.0.0](https://github.com/juner/json-seq-stream/releases/tag/v2.0.0)
+
+- release
+  - 2026/11/17
+
+- new feature
+  - `parseJsonResponse<T>` / `detectJsonStreamFormat`
+    - Parse a `fetch()` `Response` by detecting the streaming JSON format from its `Content-Type` header (`application/json-seq`, `application/jsonl`, `application/x-ndjson`), with a `format` option to override detection
+  - `writableStrategy` / `readableStrategy` options
+    - Customize the queuing strategies of all `TransformStream`-based classes; composite streams forward the strategy of their typed boundary (`readableStrategy` on `Input*`, `writableStrategy` on `Output*`)
+  - `truncationFallback` option
+    - Control how an unterminated final record is handled at stream end (RFC 7464 §2.4) in `RecordToSequenceStream`, `InputRecordSequenceStream`, and `InputJsonSequenceStream`: enqueue as-is (default), drop (`false`), or decide via callback
+  - `NDJSON_MIME_TYPE` constant (`application/x-ndjson`) in `jsonlines.ts`
+  - Subpath exports for format constants
+    - `json-seq-stream/rfc7464` (`RS`, `LF`, `MIME_TYPE`) and `json-seq-stream/jsonlines` (`LF`, `CRLF`, `MIME_TYPE`, `NDJSON_MIME_TYPE`, `EXTENSION`), keeping the main entry free of constant exports
+  - `parseJsonSequence<T>` / `stringifyJsonSequence<T>`
+    - Async generator helpers for `application/json-seq` (`AsyncIterable` / `Iterable` support)
+  - `parseJsonLines<T>` / `stringifyJsonLines<T>`
+    - Async generator helpers for `application/jsonl` / `application/x-ndjson` (`AsyncIterable` / `Iterable` support)
+  - `maxLength` option
+    - Limit maximum buffer length per segment/record in `TextSplitStream`, `RecordToSequenceStream`, `InputLineFeedSeparatedSequenceStream`, `InputRecordSequenceStream`, `InputJsonLinesStream`, and `InputJsonSequenceStream`
+  - Async `parse` and `stringify` functions
+    - Support returning `Promise` in `ParseStream<T>` and `StringifyStream<T>`
+  - Multi-line JSON and truncated record support
+    - Support pretty-printed (multi-line) JSON objects/arrays and recover from truncated records on the next `RS` in `RecordToSequenceStream` / `InputJsonSequenceStream`
+
+- breaking change
+  - Default `errorFallback` behavior changed
+    - Input (`InputJsonSequenceParseStream`, `InputJsonSequenceStream`, `InputJsonLinesStream`): records that fail to parse are skipped with a `console.warn` (RFC 7464 §2.1) instead of silently
+    - Output (`OutputJsonSequenceStringifyStream`, `OutputJsonSequenceStream`, `OutputJsonLinesStream`): values that fail to stringify now error the stream instead of being silently dropped
+    - Pass `errorFallback: false` to restore the previous silent-skip behavior
+
+- fix
+  - `ParseStream<T>`: enqueue falsy parsed values (`0`, `false`, `null`, `""`) and only skip `undefined`
+  - `StringifyStream<T>`: enqueue empty-string results and only skip `undefined`
+  - `InputJsonSequenceParseStream<T>`: ignore empty and whitespace-only chunks before parsing
+  - `TextJoinStream`: emit trailing delimiter immediately on each chunk transform when `end: true`
+  - `OutputJsonLinesStream<T>`: default `end` option to `true` for real-time line termination
+  - `TextSplitStream`: sort splitters by length descending for multi-character delimiters
+  - `RecordToSequenceStream`: fix initial `begin` state handling and multi-character delimiters split across chunk boundaries
+  - Forward `ignoreBOM`, `chunkEndSplit`, `fallbackSkip`, `maxLength`, and `skip` options in composite streams (`InputJsonSequenceStream`, `InputJsonLinesStream`, `OutputJsonSequenceStream`)
+  - Export instance type aliases for deprecated class names
+
+- rename
+  - `InputLineFeedSeparattedSequenceStream` -> `InputLineFeedSeparatedSequenceStream`
+  - `InputLineFeedSeparattedSequenceStreamOptions` -> `InputLineFeedSeparatedSequenceStreamOptions`
+
+- deprecated
+  - `InputLineFeedSeparattedSequenceStream`
+    - rename after `InputLineFeedSeparatedSequenceStream`
+  - `InputLineFeedSeparattedSequenceStreamOptions`
+    - rename after `InputLineFeedSeparatedSequenceStreamOptions`
+
+- refactor
+  - Narrow `OutputJsonSequenceStream<T>` and `OutputJsonLinesStream<T>` readable chunk type from `BufferSource` to `Uint8Array<ArrayBuffer>`
+
+- compat
+  - Replace `RegExp.escape` (ES2025) with an internal escape helper and lower `engines.node` to `>=20` (Node.js 20 / 22 LTS support)
+
+- build
+  - Add `sideEffects: false` for bundler tree-shaking
+
+- dev
+  - Achieve 100% test coverage across all statements, branches, functions, and lines
+  - Enable type-checked ESLint rules
+
+
 ## v1.0.11
 
 - [npm:json-seq-stream@1.0.11](https://www.npmjs.com/package/json-seq-stream/v/1.0.11)
