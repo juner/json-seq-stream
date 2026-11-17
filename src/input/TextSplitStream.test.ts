@@ -18,7 +18,7 @@ test("enqueue", async ({ expect }) => {
     splitter,
     chunkEndSplit,
   });
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write(`${splitter}猫猫${splitter}犬犬`);
     await writer.write(`鳥鳥${splitter}猿猿${splitter}`);

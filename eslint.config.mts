@@ -12,8 +12,27 @@ export default defineConfig([
       `dist/**/**.*`,
     ],
   },
-  { files: [`**/*.{js,mjs,cjs,ts,mts,cts}`], plugins: { js }, extends: [js.configs.recommended] },
-  { files: [`**/*.{js,mjs,cjs,ts,mts,cts}`], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  {
+    files: [`**/*.{js,mjs,cjs,ts,mts,cts}`],
+    plugins: { js },
+    extends: [js.configs.recommended],
+  },
+  {
+    files: [`**/*.{js,mjs,cjs,ts,mts,cts}`],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: [
+            "eslint.config.mts",
+            "vite.config.js",
+            "vitest.config.ts",
+            "utils/*.ts",
+          ],
+        },
+      },
+    },
+  },
   {
     files: [`**/*.{js,mjs,cjs,ts,mts,cts}`],
     plugins: {
@@ -22,7 +41,7 @@ export default defineConfig([
     },
     extends: [
       stylistic.configs.recommended,
-      tseslint.configs.recommended,
+      tseslint.configs.recommendedTypeChecked,
     ],
     rules: {
       "semi": [`error`],
@@ -36,6 +55,7 @@ export default defineConfig([
         varsIgnorePattern: `^_`,
       }],
       "@stylistic/quotes": [`error`, "double", { allowTemplateLiterals: "always" }],
+      "@typescript-eslint/no-deprecated": [`error`],
     },
   },
   { files: [`**/*.json`], ignores: [`**/tsconfig.json`, `package-lock.json`, `**/.vscode/*.json`], plugins: { json }, language: `json/json`, extends: [`json/recommended`] },

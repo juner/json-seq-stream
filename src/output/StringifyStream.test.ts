@@ -104,9 +104,11 @@ test("error to error", async ({ expect }) => {
   type Value = {
     value: unknown
   };
+  const errorInstance = new Error("sample-error");
   const { readable, writable } = new StringifyStream<Value>({
     errorFallback: (_e, { error }) => {
-      error(new Error("sample-error", { cause: [_e] }));
+      errorInstance.cause = [_e];
+      error(errorInstance);
     },
     stringify: JSON.stringify,
   });
@@ -122,5 +124,32 @@ test("error to error", async ({ expect }) => {
     promises.push(writer.close());
     await Promise.all(promises);
   }
-  await expect(call()).rejects.toThrowError("sample-error");
+  await expect(call()).rejects.toThrow(errorInstance);
+});
+
+test("error to reject", async ({ expect }) => {
+  type Value = {
+    value: unknown
+  };
+  const errorInstance = new Error("sample-error");
+  const { readable, writable } = new StringifyStream<Value>({
+    errorFallback: (_e, { error }) => {
+      errorInstance.cause = [_e];
+      return Promise.reject(errorInstance).finally(() => error(errorInstance));
+    },
+    stringify: JSON.stringify,
+  });
+  const writer = writable.getWriter();
+  async function call() {
+    const promises: Promise<unknown>[] = [];
+    const value1: Value = { value: undefined };
+    const value2: Value = { value: undefined };
+    value1.value = value2;
+    value2.value = value1;
+    promises.push(writer.write(value1));
+    promises.push(Array.fromAsync(readable.values()));
+    promises.push(writer.close());
+    await Promise.all(promises);
+  }
+  await expect(call()).rejects.toThrow(errorInstance);
 });

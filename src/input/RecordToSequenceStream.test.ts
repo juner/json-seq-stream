@@ -22,7 +22,7 @@ test("enqueue", async ({ expect }) => {
     chunkEndSplit: true,
     fallbackSkip: true,
   });
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write("<123>456<789");
     await writer.write("012><345><678");
@@ -41,7 +41,7 @@ test("enqueue fallbackSkip", async ({ expect }) => {
     chunkEndSplit: false,
     fallbackSkip: (_1, _2, next) => next === "begin" || next === "record",
   });
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write("|123|456|789");
     await writer.write("012|345|678");

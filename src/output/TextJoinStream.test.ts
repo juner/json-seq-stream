@@ -20,7 +20,7 @@ test("add empty start / end delimiter", async ({ expect }) => {
     end: true,
     skip: false,
   });
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write("");
     await writer.close();
@@ -36,7 +36,7 @@ test("enqueue", async ({ expect }) => {
     end: false,
     skip: false,
   });
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write("鶏");
     await writer.write("猫");
@@ -56,7 +56,7 @@ test("enqueue and start / end delimiter", async ({ expect }) => {
     end: true,
     skip: true,
   });
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write("鶏");
     await writer.write("猫");
