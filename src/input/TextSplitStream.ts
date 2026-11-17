@@ -5,9 +5,11 @@ export type TextSplitStreamOptions = {
   splitter: string | string[]
   /** chunk end split force */
   chunkEndSplit: boolean
+  /** maximum allowed length for a single split segment */
+  maxLength?: number
 };
 
-function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStreamOptions): {
+function makeInternalTextSplitStream({ splitter, chunkEndSplit, maxLength }: TextSplitStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const { separator, checker } = makeSeparator(splitter);
@@ -27,6 +29,11 @@ function makeInternalTextSplitStream({ splitter, chunkEndSplit }: TextSplitStrea
           }
 
           sequence.push(c);
+          if (maxLength !== undefined && sequence.join("").length > maxLength) {
+            sequence.splice(0, sequence.length);
+            controller.error(new RangeError(`Maximum length (${maxLength}) exceeded`));
+            return;
+          }
         }
 
         // chunk end split

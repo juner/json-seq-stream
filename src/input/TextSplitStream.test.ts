@@ -46,3 +46,20 @@ test("multi-char splitter across chunk boundary", async ({ expect }) => {
   const array = await Array.fromAsync(readable);
   expect(array).toEqual(["a", "b", "c", "d"]);
 });
+
+test("maxLength exceeded throws RangeError", async ({ expect }) => {
+  const { readable, writable } = new TextSplitStream({
+    splitter: "\n",
+    chunkEndSplit: false,
+    maxLength: 5,
+  });
+  const writer = writable.getWriter();
+  async function call() {
+    const promises: Promise<unknown>[] = [];
+    promises.push(writer.write("12345\n123456\n"));
+    promises.push(Array.fromAsync(readable));
+    promises.push(writer.close());
+    await Promise.all(promises);
+  }
+  await expect(call()).rejects.toThrow(RangeError);
+});

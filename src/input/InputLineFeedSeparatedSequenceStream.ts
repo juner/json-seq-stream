@@ -11,10 +11,12 @@ const LINEFEED_SEPARATOR = [LF, CRLF];
 
 export class InputLineFeedSeparatedSequenceStream extends TextSplitStream {
   constructor(options?: InputLineFeedSeparatedSequenceStreamOptions) {
-    let { splitter, chunkEndSplit } = options ?? {};
-    splitter ??= LINEFEED_SEPARATOR;
-    chunkEndSplit ??= false;
-    super({ splitter, chunkEndSplit });
+    const {
+      splitter = LINEFEED_SEPARATOR,
+      chunkEndSplit = false,
+      maxLength,
+    } = options ?? {};
+    super({ splitter, chunkEndSplit, maxLength });
   }
 }
 
