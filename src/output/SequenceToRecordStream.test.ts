@@ -18,7 +18,7 @@ test("enqueue", async ({ expect }) => {
     end: ">",
     skip: true,
   });
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write(`T`);
     await writer.write("");

@@ -73,9 +73,11 @@ test("error to error", async ({ expect }) => {
   } | {
     error: unknown
   };
+  const errorInstance = new Error("sample-error");
   const { readable, writable } = new InputJsonSequenceParseStream<Value>({
     errorFallback: (_e, { error }) => {
-      error(new Error("sample-error", { cause: [_e] }));
+      errorInstance.cause = [_e];
+      error(errorInstance);
     },
   });
   const writer = writable.getWriter();
@@ -86,5 +88,5 @@ test("error to error", async ({ expect }) => {
     promises.push(writer.close());
     await Promise.all(promises);
   }
-  await expect(call()).rejects.toThrowError("sample-error");
+  await expect(call()).rejects.toThrow(errorInstance);
 });

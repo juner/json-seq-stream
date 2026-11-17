@@ -4,7 +4,7 @@ import { LF, RS } from "../rfc7464.js";
 
 test("empty", async ({ expect }) => {
   const { response, writable } = make();
-  writable.close();
+  void writable.close();
   const text = await response.text();
   expect(text).toHaveLength(0);
 });
@@ -12,7 +12,7 @@ test("empty", async ({ expect }) => {
 test("enqueue", async ({ expect }) => {
   const { response, writable } = make();
 
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
     await writer.write("test");
     await writer.write("hogepiyo");

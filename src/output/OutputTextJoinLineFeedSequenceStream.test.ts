@@ -4,12 +4,12 @@ import { OutputTextJoinLineFeedSequenceStream } from "../index.js";
 test("enqueue", async ({ expect }) => {
   const { readable, writable } = new OutputTextJoinLineFeedSequenceStream();
   const response = new Response(readable.pipeThrough(new TextEncoderStream()));
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
-    writer.write(`🐈🐶`);
-    writer.write(``);
-    writer.write(`🐒🐓`);
-    writer.write(`🐕🐗`);
+    void writer.write(`🐈🐶`);
+    void writer.write(``);
+    void writer.write(`🐒🐓`);
+    void writer.write(`🐕🐗`);
     await writer.close();
   })();
   const text = await response.text();

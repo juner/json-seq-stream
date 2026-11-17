@@ -67,7 +67,7 @@ test("error to enqueue", async ({ expect }) => {
     value: unknown
   };
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
-    errorFallback: async (e, { enqueue }) => {
+    errorFallback: async (_e, { enqueue }) => {
       const { resolve, promise } = Promise.withResolvers<void>();
       queueMicrotask(resolve);
       await promise;
@@ -93,9 +93,11 @@ test("error to error", async ({ expect }) => {
   type Value = {
     value: unknown
   };
+  const errorInstance = new Error("sample-error");
   const { readable, writable } = new OutputJsonSequenceStringifyStream<Value>({
     errorFallback: (_e, { error }) => {
-      error(new Error("sample-error", { cause: [_e] }));
+      errorInstance.cause = [_e];
+      error(errorInstance);
     },
   });
   const writer = writable.getWriter();
@@ -110,5 +112,5 @@ test("error to error", async ({ expect }) => {
     promises.push(writer.close());
     await Promise.all(promises);
   }
-  await expect(call()).rejects.toThrowError("sample-error");
+  await expect(call()).rejects.toThrow(errorInstance);
 });

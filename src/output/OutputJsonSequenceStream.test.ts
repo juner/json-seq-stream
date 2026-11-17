@@ -16,10 +16,10 @@ test("enqueue", async ({ expect }) => {
     value: number
   };
   const { writable, response } = make<Value>();
-  (async () => {
+  void (async () => {
     const writer = writable.getWriter();
-    writer.write({ value: 30 });
-    writer.write({ value: 3 });
+    void writer.write({ value: 30 });
+    void writer.write({ value: 3 });
     await writer.close();
   })();
   const text = await response.text();

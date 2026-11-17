@@ -84,10 +84,12 @@ test("error to error", async ({ expect }) => {
   } | {
     error: unknown
   };
+  const errorInstance = new Error("sample-error");
   const { readable, writable } = new ParseStream<Value>({
     parse: JSON.parse,
     errorFallback: (_e, { error }) => {
-      error(new Error("sample-error", { cause: [_e] }));
+      errorInstance.cause = [_e];
+      error(errorInstance);
     },
   });
   const writer = writable.getWriter();
@@ -98,5 +100,31 @@ test("error to error", async ({ expect }) => {
     promises.push(writer.close());
     await Promise.all(promises);
   }
-  await expect(call()).rejects.toThrowError("sample-error");
+  await expect(call()).rejects.toThrow(errorInstance);
+});
+
+test("error to reject", async ({ expect }) => {
+  type Value = {
+    value: number
+    error?: undefined
+  } | {
+    error: unknown
+  };
+  const errorInstance = new Error("sample-error");
+  const { readable, writable } = new ParseStream<Value>({
+    parse: JSON.parse,
+    errorFallback: (_e, { error }) => {
+      errorInstance.cause = [_e];
+      return Promise.reject(errorInstance).finally(() => error(errorInstance));
+    },
+  });
+  const writer = writable.getWriter();
+  async function call() {
+    const promises: Promise<unknown>[] = [];
+    promises.push(writer.write("{value: 10}"));
+    promises.push(Array.fromAsync(readable.values()));
+    promises.push(writer.close());
+    await Promise.all(promises);
+  }
+  await expect(call()).rejects.toThrow(errorInstance);
 });
