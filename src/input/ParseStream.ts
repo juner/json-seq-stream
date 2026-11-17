@@ -24,15 +24,15 @@ function makeInternalParseStream<T>({ parse, errorFallback }: ParseStreamOptions
       transform(chunk, controller) {
         try {
           const result = parse(chunk);
-          if (result) controller.enqueue(result);
+          if (result !== undefined) controller.enqueue(result);
         }
         catch (e: unknown) {
           if (!errorFallback) return;
           const error = controller.error.bind(controller);
           const enqueue = controller.enqueue.bind(controller);
-          const reuslt = errorFallback(e, { chunk, error, enqueue });
-          if (reuslt?.then)
-            return reuslt.catch(() => undefined);
+          const result = errorFallback(e, { chunk, error, enqueue });
+          if (result?.then)
+            return result.catch(() => undefined);
         }
       },
     },
