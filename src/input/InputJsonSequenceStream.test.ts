@@ -30,3 +30,21 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveProperty("[0].value", 30);
   expect(array).toHaveProperty("[1].value", 3);
 });
+
+test("options forwarding", async ({ expect }) => {
+  const stream = new InputJsonSequenceStream<number>({
+    ignoreBOM: true,
+    begin: "<<",
+    end: ">>",
+    chunkEndSplit: false,
+    fallbackSkip: true,
+  });
+  const writer = stream.writable.getWriter();
+  const encoder = new TextEncoder();
+  const arrayWait = Array.fromAsync(stream.readable.values());
+  await writer.write(encoder.encode("garbage<"));
+  await writer.write(encoder.encode("<0>><<1>>trailing"));
+  await writer.close();
+  const array = await arrayWait;
+  expect(array).toEqual([0, 1]);
+});
