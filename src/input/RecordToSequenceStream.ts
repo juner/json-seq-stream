@@ -19,6 +19,19 @@ export type RecordToSequenceStreamOptions = {
   fallbackSkip: true | false | ((minChunk: string, mode: Mode, next: Mode) => boolean)
   /** maximum allowed length for a single record */
   maxLength?: number
+  /**
+   * Handles the final pending record when the stream ends before the record
+   * is terminated by the `end` delimiter (possible truncation, RFC 7464 §2.4).
+   *
+   * - `undefined` (default): the pending record is enqueued as-is (lenient).
+   * - `false`: the pending record is silently dropped.
+   * - function: called with the pending text and helper methods
+   *   (`enqueue`, `error`) to decide how to handle the record.
+   */
+  truncationFallback?: false | ((text: string, args: {
+    enqueue: (text: string) => void
+    error: (reason: unknown) => void
+  }) => (void | Promise<void>))
 } & QueuingStrategiesOptions<string, string>;
 
 function getTrailingPrefixLength(text: string, target: string): number {
@@ -57,7 +70,7 @@ function isJsonBalanced(text: string): boolean {
   return depth <= 0;
 }
 
-function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip, maxLength, writableStrategy, readableStrategy }: RecordToSequenceStreamOptions): {
+function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: recordEnd, chunkEndSplit, fallbackSkip, maxLength, truncationFallback, writableStrategy, readableStrategy }: RecordToSequenceStreamOptions): {
   args: ConstructorParameters<TransformStreamConstructor<string, string>>
 } {
   const sequence: string[] = [];
@@ -151,6 +164,14 @@ function makeInternalInputRecordSequenceStream({ begin: recordBegin, end: record
         if (carry.length > 0 && !fallback(carry, mode, modes.record)) {
           sequence.push(carry);
           mode = modes.record;
+        }
+        if (truncationFallback !== undefined && sequence.length > 0) {
+          const text = sequence.splice(0, sequence.length).join("");
+          if (truncationFallback === false) return;
+          return truncationFallback(text, {
+            enqueue: controller.enqueue.bind(controller),
+            error: controller.error.bind(controller),
+          });
         }
         if (!fallback("", mode, modes.flush)) {
           enqueue(sequence, controller);

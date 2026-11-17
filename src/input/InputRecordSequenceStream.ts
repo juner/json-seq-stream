@@ -18,10 +18,11 @@ export class InputRecordSequenceStream extends RecordToSequenceStream {
       chunkEndSplit = false,
       fallbackSkip = false,
       maxLength,
+      truncationFallback,
       writableStrategy,
       readableStrategy,
     } = options ?? {};
-    super({ begin, end, chunkEndSplit, fallbackSkip, maxLength, writableStrategy, readableStrategy });
+    super({ begin, end, chunkEndSplit, fallbackSkip, maxLength, truncationFallback, writableStrategy, readableStrategy });
   }
 }
 

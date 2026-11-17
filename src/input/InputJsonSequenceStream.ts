@@ -9,9 +9,9 @@ export type InputJsonSequenceStreamOptions<T> = { label?: string } & TextDecoder
   & OmitQueuingStrategies<InputRecordSequenceStreamOptions>;
 
 function makeInternalJsonSequenceStream<T>(options: InputJsonSequenceStreamOptions<T>) {
-  const { label, fatal, ignoreBOM, begin, end, chunkEndSplit, fallbackSkip, maxLength, parse, errorFallback, readableStrategy } = options;
+  const { label, fatal, ignoreBOM, begin, end, chunkEndSplit, fallbackSkip, maxLength, truncationFallback, parse, errorFallback, readableStrategy } = options;
   const decoder = new TextDecoderStream(label, { fatal, ignoreBOM });
-  const sequence = new InputRecordSequenceStream({ begin, end, chunkEndSplit, fallbackSkip, maxLength });
+  const sequence = new InputRecordSequenceStream({ begin, end, chunkEndSplit, fallbackSkip, maxLength, truncationFallback });
   const jsonSequence = new InputJsonSequenceParseStream({ parse, errorFallback, readableStrategy });
   const { writable } = decoder;
   const readable = decoder.readable

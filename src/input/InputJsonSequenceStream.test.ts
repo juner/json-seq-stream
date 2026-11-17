@@ -95,3 +95,13 @@ test("readableStrategy is forwarded to the parse stream", async ({ expect }) => 
   expect(sizes).toEqual([{ value: 1 }]);
   expect(await Array.fromAsync(stream.readable.values())).toEqual([{ value: 1 }]);
 });
+
+test("truncationFallback is forwarded to the record sequence stream", async ({ expect }) => {
+  type Value = { value: number };
+  const stream = new InputJsonSequenceStream<Value>({ truncationFallback: false });
+  const writer = stream.writable.getWriter();
+  const arrayWait = Array.fromAsync(stream.readable.values());
+  await writer.write(new TextEncoder().encode("\u001e{\"value\":1}\n\u001e{\"value\":2"));
+  await writer.close();
+  expect(await arrayWait).toEqual([{ value: 1 }]);
+});

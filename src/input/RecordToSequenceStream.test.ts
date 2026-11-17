@@ -189,3 +189,81 @@ test("queuing strategies are applied", ({ expect }) => {
   });
   expect(writable.getWriter().desiredSize).toBe(7);
 });
+
+test("truncationFallback: false drops the unterminated final record", async ({ expect }) => {
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "\u001e",
+    end: "\n",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+    truncationFallback: false,
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write("\u001efirst\n\u001etruncated");
+    await writer.close();
+  })();
+  const array = await Array.fromAsync(readable);
+  expect(array).toEqual(["first"]);
+});
+
+test("truncationFallback: false with terminated input emits all records", async ({ expect }) => {
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "\u001e",
+    end: "\n",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+    truncationFallback: false,
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write("\u001efirst\n\u001esecond\n");
+    await writer.close();
+  })();
+  const array = await Array.fromAsync(readable);
+  expect(array).toEqual(["first", "second"]);
+});
+
+test("truncationFallback function receives the pending text and can enqueue", async ({ expect }) => {
+  const truncated: string[] = [];
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "\u001e",
+    end: "\n",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+    truncationFallback: (text, { enqueue }) => {
+      truncated.push(text);
+      enqueue(text);
+    },
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write("\u001efirst\n\u001etruncated");
+    await writer.close();
+  })();
+  const array = await Array.fromAsync(readable);
+  expect(array).toEqual(["first", "truncated"]);
+  expect(truncated).toEqual(["truncated"]);
+});
+
+test("truncationFallback function can error the stream", async ({ expect }) => {
+  const errorInstance = new Error("truncated record");
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "\u001e",
+    end: "\n",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+    truncationFallback: (_text, { error }) => {
+      error(errorInstance);
+    },
+  });
+  const writer = writable.getWriter();
+  async function call() {
+    const promises: Promise<unknown>[] = [];
+    promises.push(writer.write("\u001etruncated"));
+    promises.push(Array.fromAsync(readable));
+    promises.push(writer.close());
+    await Promise.all(promises);
+  }
+  await expect(call()).rejects.toThrow(errorInstance);
+});
