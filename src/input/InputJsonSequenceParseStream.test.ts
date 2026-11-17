@@ -25,6 +25,26 @@ test("enqueue", async ({ expect }) => {
   expect(array).toHaveProperty("[1].value", 5);
 });
 
+test("ignore whitespace-only chunks without error", async ({ expect }) => {
+  type Value = { value: number };
+  let errorCalled = false;
+  const { readable, writable } = new InputJsonSequenceParseStream<Value>({
+    errorFallback: () => {
+      errorCalled = true;
+    },
+  });
+  const writer = writable.getWriter();
+  const arrayWait = Array.fromAsync(readable.values());
+  await writer.write("");
+  await writer.write("   ");
+  await writer.write("\t\r\n");
+  await writer.write(JSON.stringify({ value: 42 }));
+  await writer.close();
+  const array = await arrayWait;
+  expect(errorCalled).toBe(false);
+  expect(array).toEqual([{ value: 42 }]);
+});
+
 test("error to skip", async ({ expect }) => {
   type Value = {
     value: number

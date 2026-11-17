@@ -3,13 +3,18 @@ import type { ParseStreamOptions } from "./ParseStream.js";
 
 export type InputJsonSequenceParseStreamOptions<T> = Partial<ParseStreamOptions<T>>;
 
+function defaultParse<T>(text: string): T | undefined {
+  if (text.trim().length <= 0) return undefined;
+  return JSON.parse(text) as T;
+}
+
 /**
  * string の sequence を 連続した `T` の sequence に変換する TransformStream
  */
 export class InputJsonSequenceParseStream<T> extends ParseStream<T> {
   constructor(options?: InputJsonSequenceParseStreamOptions<T>) {
     let { errorFallback, parse } = options ?? {};
-    parse ??= JSON.parse;
+    parse ??= defaultParse;
     errorFallback ??= false;
     super({ parse, errorFallback });
   }
