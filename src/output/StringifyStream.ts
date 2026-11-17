@@ -24,7 +24,7 @@ function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyS
       async transform(chunk, controller) {
         try {
           const result = await stringify(chunk);
-          if ((result?.length ?? 0) > 0) controller.enqueue(result);
+          if (result !== undefined) controller.enqueue(result);
         }
         catch (e: unknown) {
           if (!errorFallback) return;
@@ -48,7 +48,7 @@ function makeInternalStringifyStream<T>({ stringify, errorFallback }: StringifyS
  * customizable stringifier function.
  *
  * This stream applies a user-provided `stringify` function to each incoming `T` value.
- * If the function returns a non-empty string, it is emitted as output.
+ * If the function returns a string (not `undefined`), it is emitted as output.
  * If the stringification process throws an error, an optional `errorFallback` handler
  * can be used to recover or handle the error.
  *

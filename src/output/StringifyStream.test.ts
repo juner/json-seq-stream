@@ -11,6 +11,19 @@ test("empty", async ({ expect }) => {
   expect(array.length).toEqual(0);
 });
 
+test("empty string is enqueued", async ({ expect }) => {
+  const { readable, writable } = new StringifyStream<string>({
+    stringify: () => ``,
+    errorFallback: false,
+  });
+  const writer = writable.getWriter();
+  const arrayWait = Array.fromAsync(readable.values());
+  await writer.write("anything");
+  await writer.close();
+  const array = await arrayWait;
+  expect(array).toEqual([``]);
+});
+
 test("stringify empty", async ({ expect }) => {
   type Value = {
     value: number
