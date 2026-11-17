@@ -16,6 +16,8 @@
   - `truncationFallback` option
     - Control how an unterminated final record is handled at stream end (RFC 7464 §2.4) in `RecordToSequenceStream`, `InputRecordSequenceStream`, and `InputJsonSequenceStream`: enqueue as-is (default), drop (`false`), or decide via callback
   - `NDJSON_MIME_TYPE` constant (`application/x-ndjson`) in `jsonlines.ts`
+  - Subpath exports for format constants
+    - `json-seq-stream/rfc7464` (`RS`, `LF`, `MIME_TYPE`) and `json-seq-stream/jsonlines` (`LF`, `CRLF`, `MIME_TYPE`, `NDJSON_MIME_TYPE`, `EXTENSION`), keeping the main entry free of constant exports
   - `parseJsonSequence<T>` / `stringifyJsonSequence<T>`
     - Async generator helpers for `application/json-seq` (`AsyncIterable` / `Iterable` support)
   - `parseJsonLines<T>` / `stringifyJsonLines<T>`

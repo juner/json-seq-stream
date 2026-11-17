@@ -14,6 +14,7 @@ This library provides composable `TransformStream` / `ReadableWritablePair` clas
 - [x] `Content-Type` based format detection for `fetch()` responses (`parseJsonResponse`)
 - [x] Customizable backpressure via `writableStrategy` / `readableStrategy` queuing strategy options
 - [x] Truncated final record handling (`truncationFallback`, RFC 7464 §2.4)
+- [x] Format constants (MIME types, separators) via subpath exports (`json-seq-stream/rfc7464`, `json-seq-stream/jsonlines`)
 
 ---
 
@@ -129,6 +130,21 @@ const stream = new InputJsonLinesStream<MyType>({
   },
 });
 ```
+
+### Format Constants (subpath exports)
+
+The format constants are intentionally kept out of the main entry and exposed
+via dedicated subpaths:
+
+```ts
+import { MIME_TYPE, RS, LF } from "json-seq-stream/rfc7464";
+import { NDJSON_MIME_TYPE, EXTENSION } from "json-seq-stream/jsonlines";
+
+const response = await fetch(url, { headers: { accept: MIME_TYPE } });
+```
+
+- `json-seq-stream/rfc7464`: `RS`, `LF`, `MIME_TYPE` (`application/json-seq`)
+- `json-seq-stream/jsonlines`: `LF`, `CRLF`, `MIME_TYPE` (`application/jsonl`), `NDJSON_MIME_TYPE` (`application/x-ndjson`), `EXTENSION` (`.jsonl`)
 
 ## See also
 

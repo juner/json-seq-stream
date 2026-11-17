@@ -14,6 +14,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./rfc7464": {
+      "types": "./dist/rfc7464.d.ts",
+      "default": "./dist/rfc7464.js"
+    },
+    "./jsonlines": {
+      "types": "./dist/jsonlines.d.ts",
+      "default": "./dist/jsonlines.js"
     }
   },
   "scripts": {
