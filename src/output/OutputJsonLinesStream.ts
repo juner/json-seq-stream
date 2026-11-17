@@ -6,7 +6,7 @@ import type { OutputTextJoinLineFeedSequenceStreamOptions } from "./OutputTextJo
 export type OutputJsonLinesStreamOptions<T> = OutputJsonSequenceStringifyStreamOptions<T> & OutputTextJoinLineFeedSequenceStreamOptions;
 
 function makeInternalOutputJsonLinesStream<T>(options: OutputJsonLinesStreamOptions<T>) {
-  const { delimiter, skip, start, end, stringify, errorFallback } = options;
+  const { delimiter, skip, start, end = true, stringify, errorFallback } = options;
   const encoder = new TextEncoderStream();
   const sequence = new OutputTextJoinLineFeedSequenceStream({ delimiter, end, skip, start });
   const jsonSequence = new OutputJsonSequenceStringifyStream({ stringify, errorFallback });

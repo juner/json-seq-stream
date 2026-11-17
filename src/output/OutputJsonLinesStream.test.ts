@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { OutputJsonLinesStream } from "../index.js";
+import { InputJsonLinesStream, OutputJsonLinesStream } from "../index.js";
 import { MIME_TYPE } from "../jsonlines.js";
 
 test("empty", async ({ expect }) => {
@@ -7,6 +7,24 @@ test("empty", async ({ expect }) => {
   await writable.close();
   const array = await response.text();
   expect(array).toHaveLength(0);
+});
+
+test("real-time streaming into InputJsonLinesStream before close", async ({ expect }) => {
+  type Value = { id: number };
+  const output = new OutputJsonLinesStream<Value>();
+  const input = new InputJsonLinesStream<Value>();
+  const readable = output.readable.pipeThrough(input);
+  const writer = output.writable.getWriter();
+  const reader = readable.getReader();
+
+  void writer.write({ id: 1 });
+  expect(await reader.read()).toEqual({ value: { id: 1 }, done: false });
+
+  void writer.write({ id: 2 });
+  expect(await reader.read()).toEqual({ value: { id: 2 }, done: false });
+
+  await writer.close();
+  expect(await reader.read()).toEqual({ value: undefined, done: true });
 });
 
 function make<T = unknown>(options?: ConstructorParameters<typeof OutputJsonLinesStream<T>>[0]) {
