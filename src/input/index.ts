@@ -29,3 +29,7 @@ export * from "./RecordToSequenceStream.js";
 // #region text -> object
 export * from "./ParseStream.js";
 // #endregion
+
+// #region fetch Response -> object
+export * from "./parseJsonResponse.js";
+// #endregion

@@ -21,6 +21,12 @@ export const CRLF = `\r\n`;
 export const MIME_TYPE = "application/jsonl";
 
 /**
+ * De facto MIME type widely used for NDJSON (newline-delimited JSON) payloads.
+ * @see https://github.com/ndjson/ndjson-spec
+ */
+export const NDJSON_MIME_TYPE = "application/x-ndjson";
+
+/**
  * JSON Lines files may be saved with the file extension `.jsonl.`
  * @see https://jsonlines.org/#conventions
  */
