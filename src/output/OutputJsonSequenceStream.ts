@@ -44,9 +44,9 @@ function makeInternalOutputJsonSequenceStream<T>(options: OutputJsonSequenceStre
  *   stream.writable.getWriter().write({ id: 1 });
  * ```
  */
-export class OutputJsonSequenceStream<T> implements ReadableWritablePair<BufferSource, T> {
+export class OutputJsonSequenceStream<T> implements ReadableWritablePair<Uint8Array<ArrayBuffer>, T> {
   #writable: WritableStream<T>;
-  #readable: ReadableStream<BufferSource>;
+  #readable: ReadableStream<Uint8Array<ArrayBuffer>>;
   get writable() { return this.#writable; }
   get readable() { return this.#readable; }
   constructor(options: OutputJsonSequenceStreamOptions<T> = {}) {
@@ -63,7 +63,7 @@ export class OutputJsonSequenceStream<T> implements ReadableWritablePair<BufferS
 export async function* stringifyJsonSequence<T>(
   source: AsyncIterable<T> | Iterable<T>,
   options?: OutputJsonSequenceStreamOptions<T>,
-): AsyncGenerator<BufferSource, void, undefined> {
+): AsyncGenerator<Uint8Array<ArrayBuffer>, void, undefined> {
   const stream = new OutputJsonSequenceStream<T>(options);
   const writer = stream.writable.getWriter();
   const writePromise = (async () => {
