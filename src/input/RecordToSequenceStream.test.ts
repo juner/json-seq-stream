@@ -30,6 +30,7 @@ test("enqueue", async ({ expect }) => {
   })();
   const array = await Array.fromAsync(readable);
   expect(array).toHaveLength(2);
+  expect(array).toEqual(["123", "345"]);
 });
 
 test("enqueue fallbackSkip", async ({ expect }) => {
@@ -101,4 +102,39 @@ test("enqueue chunkEndSplit:true", async ({ expect }) => {
   expect(array).toHaveProperty("[1]", "NEKONEKO");
   expect(array).toHaveProperty("[2]", "INUINU>");
   expect(array).toHaveProperty("[3]", ">UOUO");
+});
+
+test("multi-char begin/end split across chunks with fallbackSkip:true", async ({ expect }) => {
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "<<",
+    end: ">>",
+    chunkEndSplit: false,
+    fallbackSkip: true,
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write("garbage<");
+    await writer.write("<123>");
+    await writer.write("><<45<<6>><");
+    await writer.write("<789>><");
+    await writer.close();
+  })();
+  const array = await Array.fromAsync(readable);
+  expect(array).toEqual(["123", "456", "789"]);
+});
+
+test("trailing partial begin flushed when fallbackSkip:false", async ({ expect }) => {
+  const { readable, writable } = new RecordToSequenceStream({
+    begin: "<<",
+    end: ">>",
+    chunkEndSplit: false,
+    fallbackSkip: false,
+  });
+  void (async () => {
+    const writer = writable.getWriter();
+    await writer.write("<<123>><");
+    await writer.close();
+  })();
+  const array = await Array.fromAsync(readable);
+  expect(array).toEqual(["123", "<"]);
 });
