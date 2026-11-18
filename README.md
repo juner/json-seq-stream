@@ -73,6 +73,25 @@ for await (const chunk of readable) {
 }
 ```
 
+`readable` is a `ReadableStream<Uint8Array>`, so it can be passed directly as a `Response` or `Request` (`fetch`) body:
+
+```ts
+import { MIME_TYPE } from "json-seq-stream/jsonlines";
+
+// Server-side streaming Response
+const response = new Response(readable, {
+  headers: { "content-type": MIME_TYPE },
+});
+
+// Client-side streaming Request (requires `duplex: "half"`)
+await fetch("https://example.com/upload", {
+  method: "POST",
+  headers: { "content-type": MIME_TYPE },
+  body: readable,
+  duplex: "half",
+});
+```
+
 ### Async Generator Helpers (`AsyncIterable` / `Iterable`)
 
 ```ts
