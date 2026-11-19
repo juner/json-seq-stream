@@ -17,7 +17,7 @@ export type ParseJsonResponseOptions<T> = {
  * Detects the streaming JSON format from a `Content-Type` header value.
  *
  * - `application/json-seq` or `application/*+json-seq` -> `"json-seq"` (RFC 7464 / RFC 8091)
- * - `application/jsonl` or `application/x-ndjson` -> `"jsonl"`
+ * - `application/jsonl`, `application/*+jsonl`, `application/x-ndjson`, or `application/*+ndjson` -> `"jsonl"`
  * - `application/json` or `application/*+json` -> `"json"`
  * - anything else (or `null`) -> `undefined`
  */
@@ -37,6 +37,10 @@ export function detectJsonStreamFormat(contentType: string | null): JsonStreamFo
       if (mime.startsWith("application/")) {
         if (mime.endsWith("+json-seq") && mime.length > "application/+json-seq".length)
           return "json-seq";
+        if (mime.endsWith("+jsonl") && mime.length > "application/+jsonl".length)
+          return "jsonl";
+        if (mime.endsWith("+ndjson") && mime.length > "application/+ndjson".length)
+          return "jsonl";
         if (mime.endsWith("+json") && mime.length > "application/+json".length)
           return "json";
       }
@@ -51,7 +55,7 @@ export function detectJsonStreamFormat(contentType: string | null): JsonStreamFo
  *
  * Supported media types:
  * - `application/json-seq` / `application/*+json-seq` (RFC 7464 JSON Text Sequences)
- * - `application/jsonl` / `application/x-ndjson` (JSON Lines / NDJSON)
+ * - `application/jsonl` / `application/*+jsonl` / `application/x-ndjson` / `application/*+ndjson` (JSON Lines / NDJSON)
  * - `application/json` / `application/*+json` (Single JSON document emitted as a 1-item stream)
  *
  * Use `options.format` to parse responses with other `Content-Type` values.
