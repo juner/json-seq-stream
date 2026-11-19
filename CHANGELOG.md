@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v2.0.2
+
+- [npm:json-seq-stream@2.0.2](https://www.npmjs.com/package/json-seq-stream/v/2.0.2)
+- [github:juner/json-seq-stream/releases/tag/v2.0.2](https://github.com/juner/json-seq-stream/releases/tag/v2.0.2)
+
+- release
+  - 2026/11/19
+
+- new feature
+  - `parseJsonResponse<T>` / `detectJsonStreamFormat`
+    - Support `+json-seq` structured syntax suffix (`application/*+json-seq`, RFC 8091) as `"json-seq"`
+    - Support `+jsonl` and `+ndjson` structured syntax suffixes (`application/*+jsonl`, `application/*+ndjson`) as `"jsonl"`
+    - Support `application/json` and `application/*+json` as `"json"` format, parsing the entire response body (including pretty-printed multi-line JSON) as a 1-item stream
+
+
 ## v2.0.1
 
 - [npm:json-seq-stream@2.0.1](https://www.npmjs.com/package/json-seq-stream/v/2.0.1)
