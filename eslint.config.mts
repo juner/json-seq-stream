@@ -3,15 +3,13 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 import json from "@eslint/json";
 import markdown from "@eslint/markdown";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import stylistic from "@stylistic/eslint-plugin";
 
 export default defineConfig([
-  {
-    ignores: [
-      `dist/**/**.*`,
-    ],
-  },
+  globalIgnores([
+    `dist/**/**.*`,
+  ]),
   {
     files: [`**/*.{js,mjs,cjs,ts,mts,cts}`],
     plugins: { js },
