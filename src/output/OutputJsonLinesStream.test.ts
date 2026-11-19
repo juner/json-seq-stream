@@ -34,6 +34,31 @@ test("stringifyJsonLines round-trip with parseJsonLines", async ({ expect }) => 
   expect(array).toEqual(input);
 });
 
+test("stringifyJsonLines stops cleanly on break and closes source", async ({ expect }) => {
+  type Value = { id: number };
+  let sourceClosed = false;
+  let id = 0;
+  async function* infiniteSource(): AsyncGenerator<Value> {
+    try {
+      while (true) {
+        await Promise.resolve();
+        id++;
+        yield { id };
+      }
+    }
+    finally {
+      sourceClosed = true;
+    }
+  }
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of stringifyJsonLines(infiniteSource())) {
+    chunks.push(chunk);
+    if (chunks.length >= 2) break;
+  }
+  expect(chunks.length).toBe(2);
+  expect(sourceClosed).toBe(true);
+});
+
 function make<T = unknown>(options?: ConstructorParameters<typeof OutputJsonLinesStream<T>>[0]) {
   const { writable, readable } = new OutputJsonLinesStream(options);
   const response = new Response(readable);

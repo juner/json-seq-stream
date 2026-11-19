@@ -63,3 +63,60 @@ test("detectJsonStreamFormat detects supported media types", ({ expect }) => {
   expect(detectJsonStreamFormat("application/json")).toBeUndefined();
   expect(detectJsonStreamFormat(null)).toBeUndefined();
 });
+
+test("cancels the upstream response body when the consumer breaks out of for-await", async ({ expect }) => {
+  let cancelReason: unknown;
+  let cancelled = false;
+  let cancelResolve!: () => void;
+  const cancelDone = new Promise<void>((resolve) => {
+    cancelResolve = resolve;
+  });
+  const encoder = new TextEncoder();
+  const body = new ReadableStream<Uint8Array>({
+    pull(controller) {
+      controller.enqueue(encoder.encode(`\u001e{"value":1}\n\u001e{"value":2}\n`));
+    },
+    cancel(reason) {
+      cancelled = true;
+      cancelReason = reason;
+      cancelResolve();
+    },
+  });
+  const response = new Response(body, {
+    headers: { "content-type": "application/json-seq" },
+  });
+  const received: Value[] = [];
+  for await (const item of parseJsonResponse<Value>(response)) {
+    received.push(item);
+    break;
+  }
+  await cancelDone;
+  expect(received).toEqual([{ value: 1 }]);
+  expect(cancelled).toBe(true);
+  expect(cancelReason).toBeUndefined();
+});
+
+test("propagates upstream abort / error from the response body to the consumer", async ({ expect }) => {
+  const encoder = new TextEncoder();
+  let pulled = false;
+  const body = new ReadableStream<Uint8Array>({
+    pull(controller) {
+      if (!pulled) {
+        pulled = true;
+        controller.enqueue(encoder.encode(`\u001e{"value":1}\n`));
+        return;
+      }
+      controller.error(new DOMException("The operation was aborted.", "AbortError"));
+    },
+  });
+  const response = new Response(body, {
+    headers: { "content-type": "application/json-seq" },
+  });
+  const received: Value[] = [];
+  await expect(async () => {
+    for await (const item of parseJsonResponse<Value>(response)) {
+      received.push(item);
+    }
+  }).rejects.toThrow("The operation was aborted.");
+  expect(received).toEqual([{ value: 1 }]);
+});

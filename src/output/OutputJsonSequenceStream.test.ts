@@ -51,6 +51,50 @@ test("stringifyJsonSequence round-trip with parseJsonSequence", async ({ expect 
   expect(array).toEqual(input);
 });
 
+test("stringifyJsonSequence stops cleanly on break and closes source", async ({ expect }) => {
+  type Value = { id: number };
+  let sourceClosed = false;
+  let id = 0;
+  async function* infiniteSource(): AsyncGenerator<Value> {
+    try {
+      while (true) {
+        await Promise.resolve();
+        id++;
+        yield { id };
+      }
+    }
+    finally {
+      sourceClosed = true;
+    }
+  }
+  const chunks: Uint8Array[] = [];
+  for await (const chunk of stringifyJsonSequence(infiniteSource())) {
+    chunks.push(chunk);
+    if (chunks.length >= 3) break;
+  }
+  expect(chunks.length).toBe(3);
+  expect(sourceClosed).toBe(true);
+});
+
+test("stringifyJsonSequence closes source when stringify fails", async ({ expect }) => {
+  let sourceClosed = false;
+  async function* failingItemSource() {
+    try {
+      while (true) {
+        await Promise.resolve();
+        yield { value: 1n }; // BigInt throws in default JSON.stringify
+      }
+    }
+    finally {
+      sourceClosed = true;
+    }
+  }
+  await expect(
+    Array.fromAsync(stringifyJsonSequence(failingItemSource())),
+  ).rejects.toThrow(TypeError);
+  expect(sourceClosed).toBe(true);
+});
+
 function make<T>(options?: ConstructorParameters<typeof OutputJsonSequenceStream<T>>[0]) {
   const { readable, writable } = new OutputJsonSequenceStream(options);
   const response = new Response(readable);

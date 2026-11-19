@@ -2,6 +2,7 @@ import { OutputJsonSequenceStringifyStream } from "./OutputJsonSequenceStringify
 import type { OutputJsonSequenceStringifyStreamOptions } from "./OutputJsonSequenceStringifyStream.js";
 import { OutputRecordSequenceStream } from "./OutputRecordSequenceStream.js";
 import type { OutputRecordSequenceStreamOptions } from "./OutputRecordSequenceStream.js";
+import { pipeIterableThrough } from "../internal/pipeIterableThrough.js";
 import type { OmitQueuingStrategies } from "../types/index.js";
 
 export type OutputJsonSequenceStreamOptions<T> = Omit<OutputJsonSequenceStringifyStreamOptions<T>, "readableStrategy">
@@ -67,13 +68,5 @@ export async function* stringifyJsonSequence<T>(
   options?: OutputJsonSequenceStreamOptions<T>,
 ): AsyncGenerator<Uint8Array<ArrayBuffer>, void, undefined> {
   const stream = new OutputJsonSequenceStream<T>(options);
-  const writer = stream.writable.getWriter();
-  const writePromise = (async () => {
-    for await (const item of source) {
-      await writer.write(item);
-    }
-    await writer.close();
-  })();
-  yield* stream.readable;
-  await writePromise;
+  yield* pipeIterableThrough(source, stream, item => item);
 }

@@ -79,6 +79,84 @@ test("parseJsonSequence helper with string and binary chunks", async ({ expect }
   expect(array).toEqual([{ id: 1 }, { id: 2 }]);
 });
 
+test("parseJsonSequence stops cleanly on break without unhandled rejection and closes source", async ({ expect }) => {
+  type Value = { id: number };
+  let sourceClosed = false;
+  let yieldedCount = 0;
+  async function* infiniteSource() {
+    try {
+      while (true) {
+        await Promise.resolve();
+        yieldedCount++;
+        yield `\u001e{"id":${yieldedCount}}\n`;
+      }
+    }
+    finally {
+      sourceClosed = true;
+    }
+  }
+  const received: Value[] = [];
+  for await (const item of parseJsonSequence<Value>(infiniteSource())) {
+    received.push(item);
+    if (received.length >= 2) break;
+  }
+  expect(received).toEqual([{ id: 1 }, { id: 2 }]);
+  expect(sourceClosed).toBe(true);
+});
+
+test("parseJsonSequence stops cleanly on break when writer is blocked on backpressure", async ({ expect }) => {
+  type Value = { id: number };
+  let sourceClosed = false;
+  async function* multiRecordChunkSource() {
+    try {
+      while (true) {
+        await Promise.resolve();
+        yield `\u001e{"id":1}\n\u001e{"id":2}\n\u001e{"id":3}\n`;
+      }
+    }
+    finally {
+      sourceClosed = true;
+    }
+  }
+  const received: Value[] = [];
+  for await (const item of parseJsonSequence<Value>(multiRecordChunkSource(), {
+    readableStrategy: { highWaterMark: 0 },
+  })) {
+    received.push(item);
+    break;
+  }
+  expect(received).toEqual([{ id: 1 }]);
+  expect(sourceClosed).toBe(true);
+});
+
+test("parseJsonSequence propagates source errors", async ({ expect }) => {
+  async function* failingSource() {
+    await Promise.resolve();
+    yield `\u001e{"id":1}\n`;
+    throw new Error("source failure");
+  }
+  await expect(Array.fromAsync(parseJsonSequence(failingSource()))).rejects.toThrow("source failure");
+});
+
+test("parseJsonSequence stops cleanly when internal stream errors", async ({ expect }) => {
+  let sourceClosed = false;
+  async function* longRecordSource() {
+    try {
+      while (true) {
+        await Promise.resolve();
+        yield `\u001e{"id":"too-long"}\n`;
+      }
+    }
+    finally {
+      sourceClosed = true;
+    }
+  }
+  await expect(
+    Array.fromAsync(parseJsonSequence(longRecordSource(), { maxLength: 5 })),
+  ).rejects.toThrow(RangeError);
+  expect(sourceClosed).toBe(true);
+});
+
 test("readableStrategy is forwarded to the parse stream", async ({ expect }) => {
   const sizes: unknown[] = [];
   const stream = new InputJsonSequenceStream<{ value: number }>({

@@ -2,6 +2,7 @@ import { InputJsonSequenceParseStream } from "./InputJsonSequenceParseStream.js"
 import type { InputJsonSequenceParseStreamOptions } from "./InputJsonSequenceParseStream.js";
 import { InputLineFeedSeparatedSequenceStream } from "./InputLineFeedSeparatedSequenceStream.js";
 import type { InputLineFeedSeparatedSequenceStreamOptions } from "./InputLineFeedSeparatedSequenceStream.js";
+import { pipeIterableThrough } from "../internal/pipeIterableThrough.js";
 import type { OmitQueuingStrategies } from "../types/index.js";
 
 export type InputJsonLinesStreamOptions<T> = { label?: string } & TextDecoderOptions
@@ -69,14 +70,10 @@ export async function* parseJsonLines<T>(
   options?: InputJsonLinesStreamOptions<T>,
 ): AsyncGenerator<T, void, undefined> {
   const stream = new InputJsonLinesStream<T>(options);
-  const writer = stream.writable.getWriter();
   const encoder = new TextEncoder();
-  const writePromise = (async () => {
-    for await (const chunk of source) {
-      await writer.write(typeof chunk === "string" ? encoder.encode(chunk) : chunk);
-    }
-    await writer.close();
-  })();
-  yield* stream.readable;
-  await writePromise;
+  yield* pipeIterableThrough(
+    source,
+    stream,
+    chunk => (typeof chunk === "string" ? encoder.encode(chunk) : chunk),
+  );
 }

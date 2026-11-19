@@ -34,6 +34,31 @@ test("parseJsonLines helper with string and binary chunks", async ({ expect }) =
   expect(array).toEqual([{ a: 1 }, { a: 2 }]);
 });
 
+test("parseJsonLines stops cleanly on break without unhandled rejection and closes source", async ({ expect }) => {
+  type Value = { a: number };
+  let sourceClosed = false;
+  let yieldedCount = 0;
+  async function* infiniteSource() {
+    try {
+      while (true) {
+        await Promise.resolve();
+        yieldedCount++;
+        yield `{"a":${yieldedCount}}\n`;
+      }
+    }
+    finally {
+      sourceClosed = true;
+    }
+  }
+  const received: Value[] = [];
+  for await (const item of parseJsonLines<Value>(infiniteSource())) {
+    received.push(item);
+    if (received.length >= 2) break;
+  }
+  expect(received).toEqual([{ a: 1 }, { a: 2 }]);
+  expect(sourceClosed).toBe(true);
+});
+
 test("readableStrategy is forwarded to the parse stream", async ({ expect }) => {
   const sizes: unknown[] = [];
   const stream = new InputJsonLinesStream<{ value: number }>({
