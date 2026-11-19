@@ -6,7 +6,7 @@ import { InputJsonLinesStream } from "./InputJsonLinesStream.js";
 import type { InputJsonLinesStreamOptions } from "./InputJsonLinesStream.js";
 
 /** Supported streaming JSON formats. */
-export type JsonStreamFormat = "json-seq" | "jsonl";
+export type JsonStreamFormat = "json-seq" | "jsonl" | "json";
 
 export type ParseJsonResponseOptions<T> = {
   /** Explicit format. When set, `Content-Type` detection is skipped. */
@@ -17,7 +17,8 @@ export type ParseJsonResponseOptions<T> = {
  * Detects the streaming JSON format from a `Content-Type` header value.
  *
  * - `application/json-seq` or `application/*+json-seq` -> `"json-seq"` (RFC 7464 / RFC 8091)
- * - `application/jsonl` / `application/x-ndjson` -> `"jsonl"`
+ * - `application/jsonl` or `application/x-ndjson` -> `"jsonl"`
+ * - `application/json` or `application/*+json` -> `"json"`
  * - anything else (or `null`) -> `undefined`
  */
 export function detectJsonStreamFormat(contentType: string | null): JsonStreamFormat | undefined {
@@ -30,21 +31,28 @@ export function detectJsonStreamFormat(contentType: string | null): JsonStreamFo
     case JSONL_MIME_TYPE:
     case NDJSON_MIME_TYPE:
       return "jsonl";
+    case "application/json":
+      return "json";
     default:
-      if (mime.startsWith("application/") && mime.endsWith("+json-seq") && mime.length > "application/+json-seq".length)
-        return "json-seq";
+      if (mime.startsWith("application/")) {
+        if (mime.endsWith("+json-seq") && mime.length > "application/+json-seq".length)
+          return "json-seq";
+        if (mime.endsWith("+json") && mime.length > "application/+json".length)
+          return "json";
+      }
       return undefined;
   }
 }
 
 /**
- * Parses a `fetch()` `Response` containing a streaming JSON body into a
+ * Parses a `fetch()` `Response` containing a JSON or streaming JSON body into a
  * `ReadableStream` of typed values (`T`), selecting the format from the
  * response's `Content-Type` header.
  *
  * Supported media types:
  * - `application/json-seq` / `application/*+json-seq` (RFC 7464 JSON Text Sequences)
  * - `application/jsonl` / `application/x-ndjson` (JSON Lines / NDJSON)
+ * - `application/json` / `application/*+json` (Single JSON document emitted as a 1-item stream)
  *
  * Use `options.format` to parse responses with other `Content-Type` values.
  *
@@ -66,6 +74,8 @@ export function parseJsonResponse<T>(response: Response, options?: ParseJsonResp
     throw new TypeError("json-seq-stream: the response has no body.");
   const stream = format === "json-seq"
     ? new InputJsonSequenceStream<T>(options)
-    : new InputJsonLinesStream<T>(options);
+    : format === "jsonl"
+      ? new InputJsonLinesStream<T>(options)
+      : new InputJsonLinesStream<T>({ splitter: [], chunkEndSplit: false, ...options });
   return response.body.pipeThrough(stream);
 }

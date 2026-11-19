@@ -35,6 +35,22 @@ test("parses an application/jsonl response", async ({ expect }) => {
   expect(array).toEqual([{ value: 1 }]);
 });
 
+test("parses a pretty-printed application/json response as a single item", async ({ expect }) => {
+  const response = new Response(`{\n  "value": 1\n}\n`, {
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
+  const array = await Array.fromAsync(parseJsonResponse<Value>(response));
+  expect(array).toEqual([{ value: 1 }]);
+});
+
+test("parses an application/*+json response as a single item", async ({ expect }) => {
+  const response = new Response(`{\n  "value": 42\n}`, {
+    headers: { "content-type": "application/problem+json" },
+  });
+  const array = await Array.fromAsync(parseJsonResponse<Value>(response));
+  expect(array).toEqual([{ value: 42 }]);
+});
+
 test("format option overrides content-type detection", async ({ expect }) => {
   const response = new Response(`{"value":1}\n`, {
     headers: { "content-type": "text/plain" },
@@ -72,7 +88,12 @@ test("detectJsonStreamFormat detects supported media types", ({ expect }) => {
   expect(detectJsonStreamFormat("text/foo+json-seq")).toBeUndefined();
   expect(detectJsonStreamFormat("application/jsonl")).toBe("jsonl");
   expect(detectJsonStreamFormat("application/x-ndjson")).toBe("jsonl");
-  expect(detectJsonStreamFormat("application/json")).toBeUndefined();
+  expect(detectJsonStreamFormat("application/json")).toBe("json");
+  expect(detectJsonStreamFormat("application/json; charset=utf-8")).toBe("json");
+  expect(detectJsonStreamFormat("application/ld+json")).toBe("json");
+  expect(detectJsonStreamFormat("application/problem+json; charset=utf-8")).toBe("json");
+  expect(detectJsonStreamFormat("application/+json")).toBeUndefined();
+  expect(detectJsonStreamFormat("text/plain")).toBeUndefined();
   expect(detectJsonStreamFormat(null)).toBeUndefined();
 });
 
