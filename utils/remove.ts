@@ -1,4 +1,5 @@
-import fse from "fs-extra/esm";
+import { existsSync } from "node:fs";
+import { rm } from "node:fs/promises";
 import util from "node:util";
 
 const args = (() => {
@@ -25,8 +26,7 @@ if (!file || file.length <= 0) {
 }
 
 for (const f of file) {
-  const exist = await fse.pathExists(f);
-  if (!exist) continue;
-  await fse.remove(f);
+  if (!existsSync(f)) continue;
+  await rm(f, { recursive: true, force: true });
   console.log("remove:", f);
 }

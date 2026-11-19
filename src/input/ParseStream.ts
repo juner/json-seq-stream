@@ -9,11 +9,13 @@ export type ParseStreamOptions<T> = {
    * If set to `false`, parse errors are silently ignored.
    */
   errorFallback: false | ((
-    error: unknown, args: {
+    error: unknown,
+    args: {
       error: (reason: unknown) => void
       chunk: string
       enqueue: (arg: T) => void
-    }) => (void | Promise<void>))
+    },
+  ) => (void | Promise<void>))
 } & QueuingStrategiesOptions<string, T>;
 
 function makeInternalParseStream<T>({ parse, errorFallback, writableStrategy, readableStrategy }: ParseStreamOptions<T>): {

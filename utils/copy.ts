@@ -1,4 +1,4 @@
-import fse from "fs-extra/esm";
+import { cp } from "node:fs/promises";
 import path from "node:path";
 import util from "node:util";
 
@@ -14,7 +14,6 @@ const parsed = util.parseArgs({
     output: {
       type: "string",
       short: "o",
-      require: true,
     },
     file: {
       type: "string",
@@ -38,8 +37,9 @@ for (const f of file) {
   const src = path.join("./", f);
   const dest = path.join(output, f);
 
-  await fse.copy(src, dest, {
-    overwrite: true,
+  await cp(src, dest, {
+    recursive: true,
+    force: true,
   });
 
   console.log("copy:", src, " to ", dest);

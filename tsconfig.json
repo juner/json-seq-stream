@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2024",
     "useDefineForClassFields": true,
     "module": "NodeNext",
     "lib": [
       "ESNext",
       "DOM",
       "DOM.Iterable"
+    ],
+    "types": [
+      "node"
     ],
     "skipLibCheck": true,
     /* Bundler mode */
@@ -28,7 +31,8 @@
     "noEmit": true
   },
   "include": [
-    "src"
+    "src",
+    "utils"
   ],
   "exclude": [
 

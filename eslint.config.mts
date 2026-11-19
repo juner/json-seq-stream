@@ -25,7 +25,6 @@ export default defineConfig([
             "eslint.config.mts",
             "vite.config.js",
             "vitest.config.ts",
-            "utils/*.ts",
           ],
         },
       },

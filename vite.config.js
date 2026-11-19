@@ -4,9 +4,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, "src/index.ts"),
-        rfc7464: resolve(__dirname, "src/rfc7464.ts"),
-        jsonlines: resolve(__dirname, "src/jsonlines.ts"),
+        index: resolve(import.meta.dirname, "src/index.ts"),
+        rfc7464: resolve(import.meta.dirname, "src/rfc7464.ts"),
+        jsonlines: resolve(import.meta.dirname, "src/jsonlines.ts"),
       },
       formats: ["es"],
     },

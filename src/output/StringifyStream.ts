@@ -10,11 +10,13 @@ export type StringifyStreamOptions<T> = {
    * If set to `false`, errors are silently ignored.
    */
   errorFallback: false | ((
-    error: unknown, args: {
+    error: unknown,
+    args: {
       error: (reason: unknown) => void
       chunk: T
       enqueue: (arg: string) => void
-    }) => (void | Promise<void>))
+    },
+  ) => (void | Promise<void>))
 } & QueuingStrategiesOptions<T, string>;
 
 function makeInternalStringifyStream<T>({ stringify, errorFallback, writableStrategy, readableStrategy }: StringifyStreamOptions<T>): {
