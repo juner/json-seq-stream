@@ -11,6 +11,14 @@ test("parses an application/json-seq response", async ({ expect }) => {
   expect(array).toEqual([{ value: 1 }, { value: 2 }]);
 });
 
+test("parses an application/*+json-seq response", async ({ expect }) => {
+  const response = new Response(`\u001e{"value":1}\n\u001e{"value":2}\n`, {
+    headers: { "content-type": "application/geo+json-seq; charset=utf-8" },
+  });
+  const array = await Array.fromAsync(parseJsonResponse<Value>(response));
+  expect(array).toEqual([{ value: 1 }, { value: 2 }]);
+});
+
 test("parses an application/x-ndjson response with a charset parameter", async ({ expect }) => {
   const response = new Response(`{"value":1}\n{"value":2}\n`, {
     headers: { "content-type": "application/x-ndjson; charset=utf-8" },
@@ -58,6 +66,10 @@ test("throws TypeError when the response has no body", ({ expect }) => {
 test("detectJsonStreamFormat detects supported media types", ({ expect }) => {
   expect(detectJsonStreamFormat("application/json-seq")).toBe("json-seq");
   expect(detectJsonStreamFormat("Application/JSON-Seq; charset=utf-8")).toBe("json-seq");
+  expect(detectJsonStreamFormat("application/geo+json-seq")).toBe("json-seq");
+  expect(detectJsonStreamFormat("application/vnd.example+json-seq; charset=utf-8")).toBe("json-seq");
+  expect(detectJsonStreamFormat("application/+json-seq")).toBeUndefined();
+  expect(detectJsonStreamFormat("text/foo+json-seq")).toBeUndefined();
   expect(detectJsonStreamFormat("application/jsonl")).toBe("jsonl");
   expect(detectJsonStreamFormat("application/x-ndjson")).toBe("jsonl");
   expect(detectJsonStreamFormat("application/json")).toBeUndefined();

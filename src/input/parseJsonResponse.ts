@@ -16,7 +16,7 @@ export type ParseJsonResponseOptions<T> = {
 /**
  * Detects the streaming JSON format from a `Content-Type` header value.
  *
- * - `application/json-seq` -> `"json-seq"` (RFC 7464)
+ * - `application/json-seq` or `application/*+json-seq` -> `"json-seq"` (RFC 7464 / RFC 8091)
  * - `application/jsonl` / `application/x-ndjson` -> `"jsonl"`
  * - anything else (or `null`) -> `undefined`
  */
@@ -31,6 +31,8 @@ export function detectJsonStreamFormat(contentType: string | null): JsonStreamFo
     case NDJSON_MIME_TYPE:
       return "jsonl";
     default:
+      if (mime.startsWith("application/") && mime.endsWith("+json-seq") && mime.length > "application/+json-seq".length)
+        return "json-seq";
       return undefined;
   }
 }
@@ -41,7 +43,7 @@ export function detectJsonStreamFormat(contentType: string | null): JsonStreamFo
  * response's `Content-Type` header.
  *
  * Supported media types:
- * - `application/json-seq` (RFC 7464 JSON Text Sequences)
+ * - `application/json-seq` / `application/*+json-seq` (RFC 7464 JSON Text Sequences)
  * - `application/jsonl` / `application/x-ndjson` (JSON Lines / NDJSON)
  *
  * Use `options.format` to parse responses with other `Content-Type` values.
