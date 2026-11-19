@@ -127,7 +127,9 @@ import { parseJsonResponse } from "json-seq-stream";
 type Value = { value: number };
 
 const response = await fetch("https://example.com/data");
-// application/json-seq -> RFC 7464, application/jsonl or application/x-ndjson -> JSON Lines
+// - application/json-seq, application/*+json-seq -> RFC 7464
+// - application/jsonl, application/*+jsonl, application/x-ndjson, application/*+ndjson -> JSON Lines
+// - application/json, application/*+json -> 1-item stream
 for await (const value of parseJsonResponse<Value>(response)) {
   console.log(value);
 }
