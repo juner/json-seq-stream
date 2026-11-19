@@ -1,6 +1,6 @@
 {
   "name": "json-seq-stream",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "application/json-seq and jsonl (NDJSON) support stream / async iterator library",
   "files": [
     "dist",

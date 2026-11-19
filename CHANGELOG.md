@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## v2.0.1
+
+- [npm:json-seq-stream@2.0.1](https://www.npmjs.com/package/json-seq-stream/v/2.0.1)
+- [github:juner/json-seq-stream/releases/tag/v2.0.1](https://github.com/juner/json-seq-stream/releases/tag/v2.0.1)
+
+- release
+  - 2026/11/19
+
+- fix
+  - Cleanly abort the internal writable stream and close the upstream iterator when consumers stop early (e.g. `break` in `for await ... of`) or when the stream errors in `parseJsonSequence`, `parseJsonLines`, `stringifyJsonSequence`, and `stringifyJsonLines`, preventing unhandled promise rejections and hanging loops
+
+- docs
+  - Add `Response` and `Request` streaming examples for output streams in `README.md`
+
+- dev
+  - Update devDependencies, GitHub Actions (`actions/checkout@v7`, `actions/setup-node@v7`), and build/lint configurations
+  - Replace deprecated ESLint `ignores` configuration with `globalIgnores`
+
+
 ## v2.0.0
 
 - [npm:json-seq-stream@2.0.0](https://www.npmjs.com/package/json-seq-stream/v/2.0.0)
